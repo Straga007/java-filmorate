@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +14,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-
+@Slf4j
 public class FilmController {
     private final List<Film> posts = new ArrayList<>();
-
-    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
-
 
 
     @PostMapping(value = "/post")
@@ -27,6 +25,7 @@ public class FilmController {
         log.info("new Film: {}", film.toString());
         return film;
     }
+
     @PutMapping("/posts/post/update/{id}")
     public Film updateFilm(@PathVariable int id, @RequestBody Film filmToUpdate) {
         Film existingFilm = posts.stream()
@@ -61,6 +60,7 @@ public class FilmController {
 
         return existingFilm;
     }
+
     @DeleteMapping("/posts/post/delete/{id}")
     public ResponseEntity<Void> deleteFilm(@PathVariable int id) {
         Film filmToDelete = null;

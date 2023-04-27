@@ -1,4 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Past;
@@ -17,7 +18,7 @@ import java.time.LocalDate;
 public class User {
     private static int nextId = 1;
 
-    private  int id;
+    private int id;
 
     @NotEmpty(message = "Email cannot be empty")
     @Email(message = "Invalid email format")
@@ -33,13 +34,13 @@ public class User {
 
     public User(@NonNull String email, @NonNull String login, String name, @NonNull LocalDate dateOfBirth) {
 
-        if ( email.trim().isEmpty() || !email.contains("@")) {
+        if (email.trim().isEmpty() || !email.contains("@")) {
             throw new IllegalArgumentException("Email must contain @ symbol");
         }
-        if ( login.trim().isEmpty() || login.contains(" ")) {
+        if (login.trim().isEmpty() || login.contains(" ")) {
             throw new IllegalArgumentException("Login must not contain spaces");
         }
-        if ( dateOfBirth.isAfter(LocalDate.now())) {
+        if (dateOfBirth.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Date of birth cannot be in the future");
         }
         this.login = login;
