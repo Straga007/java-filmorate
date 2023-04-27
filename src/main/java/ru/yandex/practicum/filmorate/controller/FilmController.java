@@ -28,11 +28,11 @@ public class FilmController {
     }
 
     @PutMapping("/films")
-    public Film updateFilm(@PathVariable int id, @RequestBody Film filmToUpdate) {
+    public Film updateFilm( @RequestBody Film filmToUpdate) {
         Film existingFilm = posts.stream()
-                .filter(f -> f.getId() == id)
+                .filter(f -> f.getId() == filmToUpdate.getId())
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("No film with id " + id));
+                .orElseThrow(() -> new NoSuchElementException("No film with id " + filmToUpdate.getId()));
 
         String name = filmToUpdate.getName();
         String description = filmToUpdate.getDescription();
@@ -58,7 +58,7 @@ public class FilmController {
         existingFilm.setReleaseDate(releaseDate);
         existingFilm.setDuration(duration);
 
-        log.info("Updating film with id {}: {}", id, existingFilm);
+        log.info("Updating film with id {}: {}", filmToUpdate.getId(), existingFilm);
 
         return existingFilm;
     }
