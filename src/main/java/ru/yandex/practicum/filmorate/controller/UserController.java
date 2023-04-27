@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
+@Slf4j
 public class UserController {
     private final List<User> users = new ArrayList<>();
 
@@ -27,39 +30,44 @@ public class UserController {
 
     @PutMapping("/users")
     public User updateUser(@RequestBody User userToUpdate) {
-        for (int i = 0; i < users.size(); i++) {
-            User user = users.get(i);
-            if (user.getId() == userToUpdate.getId()) {
+        User existingUser = users.stream()
+                .filter(u -> u.getId() == userToUpdate.getId())
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("No user with id " + userToUpdate.getId()));
 
-                if (userToUpdate.getEmail() != null && userToUpdate.getEmail().trim().length() > 0) {
-                    if (!userToUpdate.getEmail().contains("@")) {
-                        throw new IllegalArgumentException("Email must contain @ symbol");
-                    }
-                    user.setEmail(userToUpdate.getEmail().trim());
-                }
+        String email = userToUpdate.getEmail();
+        String login = userToUpdate.getLogin();
+        String name = userToUpdate.getName();
+        LocalDate birthday = userToUpdate.getBirthday();
 
-                if (userToUpdate.getLogin() != null && userToUpdate.getLogin().trim().length() > 0) {
-                    if (userToUpdate.getLogin().contains(" ")) {
-                        throw new IllegalArgumentException("Login must not contain spaces");
-                    }
-                    user.setLogin(userToUpdate.getLogin().trim());
-                }
-
-                if (userToUpdate.getName() != null) {
-                    user.setName(userToUpdate.getName().trim().length() > 0 ? userToUpdate.getName().trim() : userToUpdate.getLogin());
-                }
-
-                if (userToUpdate.getBirthday() != null) {
-                    if (userToUpdate.getBirthday().isAfter(LocalDate.now())) {
-                        throw new IllegalArgumentException("Date of birth cannot be in the future");
-                    }
-                    user.setBirthday(userToUpdate.getBirthday());
-                }
-
-                return user;
+        if (email != null && !email.trim().isEmpty()) {
+            if (!email.contains("@")) {
+                throw new IllegalArgumentException("Email must contain @ symbol");
             }
+            existingUser.setEmail(email.trim());
         }
-        throw new NoSuchElementException("User with id " + userToUpdate.getId() + " not found");
+
+        if (login != null && !login.trim().isEmpty()) {
+            if (login.contains(" ")) {
+                throw new IllegalArgumentException("Login must not contain spaces");
+            }
+            existingUser.setLogin(login.trim());
+        }
+
+        if (name != null) {
+            existingUser.setName(name.trim().isEmpty() ? existingUser.getLogin() : name.trim());
+        }
+
+        if (birthday != null) {
+            if (birthday.isAfter(LocalDate.now())) {
+                throw new IllegalArgumentException("Date of birth cannot be in the future");
+            }
+            existingUser.setBirthday(birthday);
+        }
+
+        log.info("Updating user with id {}: {}", userToUpdate.getId(), existingUser);
+
+        return existingUser;
     }
 
 
