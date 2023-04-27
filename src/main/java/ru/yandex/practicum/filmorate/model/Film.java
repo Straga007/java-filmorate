@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 @NonNull
 @ToString
 public class Film {
-    private static int nextId = 1;
+    private static int nextId = 0;
     int id;
     String name;
     String description;

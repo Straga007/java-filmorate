@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @ToString
 @Log
 public class User {
-    private static int nextId = 1;
+    private static int nextId = 0;
 
     private int id;
 
