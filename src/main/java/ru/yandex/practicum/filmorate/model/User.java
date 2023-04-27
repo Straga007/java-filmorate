@@ -12,8 +12,9 @@ import java.time.LocalDate;
 @ToString
 @Log
 public class User {
+    private static int nextId = 1;
 
-    int id;
+    private int id;
 
     String email;
 
@@ -23,7 +24,7 @@ public class User {
 
     LocalDate birthday;
 
-    public User(@NonNull String email, @NonNull String login, String name, @NonNull LocalDate birthday, int id) {
+    public User(@NonNull String email, @NonNull String login, String name, @NonNull LocalDate birthday) {
 
         if (email.trim().isEmpty() || !email.contains("@")) {
             throw new IllegalArgumentException("Email must contain @ symbol");
@@ -36,7 +37,7 @@ public class User {
         }
         this.login = login;
         this.name = (name == null || name.trim().isEmpty()) ? login : name;
-        this.id = id;
+        this.id = (id == 0) ? nextId++ : id;
         this.email = email;
         this.birthday = birthday;
     }

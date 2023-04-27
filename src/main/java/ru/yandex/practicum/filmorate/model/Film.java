@@ -10,13 +10,15 @@ import lombok.extern.slf4j.Slf4j;
 @NonNull
 @ToString
 public class Film {
+    private static int nextId = 1;
+
     int id;
     String name;
     String description;
     LocalDate releaseDate;
     long duration;
 
-    public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration, int id) {
+    public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration) {
         if (name.isEmpty()) {
             throw new IllegalArgumentException("name can not be empty");
         }
@@ -29,7 +31,7 @@ public class Film {
         if (duration <= 0) {
             throw new IllegalArgumentException("The duration of the film should be positive");
         }
-        this.id = id;
+        this.id = (id == 0) ? nextId++ : id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
