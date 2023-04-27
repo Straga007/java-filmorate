@@ -24,7 +24,7 @@ public class UserController {
     }
 
 
-    @PutMapping("/users/user/status/update/{id}")
+    @PutMapping("/users")
     public User updateUser(@PathVariable int id, @RequestBody User userToUpdate) {
         for (int i = 0; i < users.size(); i++) {
             User user = users.get(i);
@@ -62,7 +62,7 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/users/user/status/delete/{id}")
+    @DeleteMapping("/users")
     public ResponseEntity<Void> deleteUser(@PathVariable int id) {
         User userToDelete = null;
         for (User user : users) {
