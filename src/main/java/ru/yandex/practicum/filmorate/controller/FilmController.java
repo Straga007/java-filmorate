@@ -63,7 +63,7 @@ public class FilmController {
         return existingFilm;
     }
 
-    @DeleteMapping("/posts/post/delete/{id}")
+    @DeleteMapping("/films")
     public ResponseEntity<Void> deleteFilm(@PathVariable int id) {
         Film filmToDelete = null;
         for (Film film : posts) {
