@@ -18,7 +18,7 @@ public class Film {
     LocalDate releaseDate;
     long duration;
 
-    public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration) {
+    public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration, int id) {
         if (name.isEmpty()) {
             throw new IllegalArgumentException("name can not be empty");
         }
