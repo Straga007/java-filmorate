@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,15 +14,16 @@ import java.util.NoSuchElementException;
 public class UserController {
     private final List<User> users = new ArrayList<>();
 
-    @PostMapping("/registration")
+    @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         try {
             users.add(user);
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
+
 
     @PutMapping("/users/user/status/update/{id}")
     public User updateUser(@PathVariable int id, @RequestBody User userToUpdate) {

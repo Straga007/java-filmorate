@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -16,13 +17,13 @@ public class FilmController {
     private final List<Film> posts = new ArrayList<>();
 
 
-    @PostMapping(value = "/post")
+    @PostMapping(value = "/films")
     public ResponseEntity<Film> createFilm(@RequestBody Film film) {
         try {
             posts.add(film);
             return ResponseEntity.ok(film);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
