@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class User {
     private static int nextId = 0;
 
-    private int id;
+    int id;
 
     String email;
 
@@ -22,9 +22,9 @@ public class User {
 
     String name;
 
-    LocalDate dateOfBirth;
+    LocalDate birthday;
 
-    public User(@NonNull String email, @NonNull String login, String name, @NonNull LocalDate dateOfBirth) {
+    public User(@NonNull String email, @NonNull String login, String name, @NonNull LocalDate birthday) {
 
         if (email.trim().isEmpty() || !email.contains("@")) {
             throw new IllegalArgumentException("Email must contain @ symbol");
@@ -32,13 +32,13 @@ public class User {
         if (login.trim().isEmpty() || login.contains(" ")) {
             throw new IllegalArgumentException("Login must not contain spaces");
         }
-        if (dateOfBirth.isAfter(LocalDate.now())) {
+        if (birthday.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Date of birth cannot be in the future");
         }
         this.login = login;
         this.name = (name == null || name.trim().isEmpty()) ? login : name;
         this.id = nextId++;
         this.email = email;
-        this.dateOfBirth = dateOfBirth;
+        this.birthday = birthday;
     }
 }

@@ -38,6 +38,7 @@ public class FilmController {
         String description = filmToUpdate.getDescription();
         LocalDate releaseDate = filmToUpdate.getReleaseDate();
         long duration = filmToUpdate.getDuration();
+        int newId = filmToUpdate.getId();
 
         if (name.isEmpty()) {
             throw new IllegalArgumentException("name can not be empty");
@@ -51,7 +52,7 @@ public class FilmController {
         if (duration <= 0) {
             throw new IllegalArgumentException("The duration of the film should be positive");
         }
-
+        existingFilm.setId(newId);
         existingFilm.setName(name);
         existingFilm.setDescription(description);
         existingFilm.setReleaseDate(releaseDate);
