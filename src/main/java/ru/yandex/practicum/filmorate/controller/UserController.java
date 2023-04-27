@@ -1,5 +1,4 @@
 package ru.yandex.practicum.filmorate.controller;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,11 +48,11 @@ public class UserController {
                     user.setName(userToUpdate.getName().trim().length() > 0 ? userToUpdate.getName().trim() : userToUpdate.getLogin());
                 }
 
-                if (userToUpdate.getDateOfBirth() != null) {
-                    if (userToUpdate.getDateOfBirth().isAfter(LocalDate.now())) {
+                if (userToUpdate.getBirthday() != null) {
+                    if (userToUpdate.getBirthday().isAfter(LocalDate.now())) {
                         throw new IllegalArgumentException("Date of birth cannot be in the future");
                     }
-                    user.setDateOfBirth(userToUpdate.getDateOfBirth());
+                    user.setBirthday(userToUpdate.getBirthday());
                 }
 
                 return user;
