@@ -74,6 +74,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @GetMapping("/users")
     public List<User> findAllUsers() {
         return users;
