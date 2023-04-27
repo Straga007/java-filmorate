@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @ToString
 @Log
 public class User {
-    private static int nextId = 0;
 
     int id;
 
@@ -37,7 +36,7 @@ public class User {
         }
         this.login = login;
         this.name = (name == null || name.trim().isEmpty()) ? login : name;
-        this.id = (id == 0) ? nextId++ : id;
+        this.id = id;
         this.email = email;
         this.birthday = birthday;
     }
