@@ -27,7 +27,7 @@ public class FilmController {
         }
     }
 
-    @PutMapping("/posts/post/update/{id}")
+    @PutMapping("/films")
     public Film updateFilm(@PathVariable int id, @RequestBody Film filmToUpdate) {
         Film existingFilm = posts.stream()
                 .filter(f -> f.getId() == id)
