@@ -21,16 +21,18 @@ public class FilmorateApplicationTests {
             new User("", " ", "   ", LocalDate.now().plusDays(1));
         });
     }
+
     @Test
     public void testValidUser() {
         String email = "yooho@";
         String login = "Jenry";
         String name = "";
         LocalDate dateOfBirth = LocalDate.now().minusDays(1);
-        User user = new User(email,login,name,dateOfBirth);
+        User user = new User(email, login, name, dateOfBirth);
         Assertions.assertNotNull(user);
 
     }
+
     @Test
     public void testInvalidFilm() {
         String name = "";
