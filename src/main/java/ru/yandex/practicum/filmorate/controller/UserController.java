@@ -25,10 +25,10 @@ public class UserController {
 
 
     @PutMapping("/users")
-    public User updateUser(@PathVariable int id, @RequestBody User userToUpdate) {
+    public User updateUser(@RequestBody User userToUpdate) {
         for (int i = 0; i < users.size(); i++) {
             User user = users.get(i);
-            if (user.getId() == id) {
+            if (user.getId() == userToUpdate.getId()) {
 
                 if (userToUpdate.getEmail() != null && userToUpdate.getEmail().trim().length() > 0) {
                     if (!userToUpdate.getEmail().contains("@")) {
@@ -58,7 +58,7 @@ public class UserController {
                 return user;
             }
         }
-        throw new NoSuchElementException("User with id " + id + " not found");
+        throw new NoSuchElementException("User with id " + userToUpdate.getId() + " not found");
     }
 
 
