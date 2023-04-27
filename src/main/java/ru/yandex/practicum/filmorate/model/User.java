@@ -1,8 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Past;
 import lombok.*;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
@@ -19,16 +16,12 @@ public class User {
 
     private int id;
 
-    @NotEmpty(message = "Email cannot be empty")
-    @Email(message = "Invalid email format")
     String email;
 
-    @NotEmpty(message = "Login cannot be empty")
     String login;
 
     String name;
 
-    @Past(message = "Date of birth cannot be in the future")
     LocalDate dateOfBirth;
 
     public User(@NonNull String email, @NonNull String login, String name, @NonNull LocalDate dateOfBirth) {
