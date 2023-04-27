@@ -18,7 +18,7 @@ public class FilmorateApplicationTests {
     @Test
     void testInvalidUser() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            new User("", " ", "   ", LocalDate.now().plusDays(1),1);
+            new User("", " ", "   ", LocalDate.now().plusDays(1));
         });
     }
 
@@ -28,7 +28,7 @@ public class FilmorateApplicationTests {
         String login = "Jenry";
         String name = "";
         LocalDate dateOfBirth = LocalDate.now().minusDays(1);
-        User user = new User(email, login, name, dateOfBirth,1);
+        User user = new User(email, login, name, dateOfBirth);
         Assertions.assertNotNull(user);
 
     }
@@ -41,7 +41,7 @@ public class FilmorateApplicationTests {
         long duration = -1;
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            new Film(name, description, releaseDate, duration,1);
+            new Film(name, description, releaseDate, duration);
         });
     }
 
@@ -52,7 +52,7 @@ public class FilmorateApplicationTests {
         LocalDate releaseDate = LocalDate.of(1999, 3, 31);
         long duration = 136;
 
-        Film film = new Film(name, description, releaseDate, duration,1);
+        Film film = new Film(name, description, releaseDate, duration);
 
         Assertions.assertNotNull(film);
     }
