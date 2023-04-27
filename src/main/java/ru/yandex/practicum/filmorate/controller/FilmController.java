@@ -20,7 +20,8 @@ public class FilmController {
     @PostMapping(value = "/films")
     public ResponseEntity<Film> createFilm(@RequestBody Film film) {
         try {
-            posts.add(film);
+            Film newFilm = new Film(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getId());
+            posts.add(newFilm);
             return ResponseEntity.ok(film);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

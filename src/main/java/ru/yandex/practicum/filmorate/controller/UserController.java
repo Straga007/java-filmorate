@@ -19,8 +19,9 @@ public class UserController {
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         try {
-            users.add(user);
-            return ResponseEntity.ok(user);
+            User newUser = new User(user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+            users.add(newUser);
+            return ResponseEntity.ok(newUser);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
