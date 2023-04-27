@@ -14,9 +14,13 @@ public class UserController {
     private final List<User> users = new ArrayList<>();
 
     @PostMapping("/registration")
-    public User createUser(@RequestBody User user) {
-        users.add(user);
-        return user;
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        try {
+            users.add(user);
+            return ResponseEntity.ok(user);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/users/user/status/update/{id}")

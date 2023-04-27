@@ -17,10 +17,13 @@ public class FilmController {
 
 
     @PostMapping(value = "/post")
-    public Film createFilm(@RequestBody Film film) {
-        posts.add(film);
-        log.info("new Film: {}", film.toString());
-        return film;
+    public ResponseEntity<Film> createFilm(@RequestBody Film film) {
+        try {
+            posts.add(film);
+            return ResponseEntity.ok(film);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/posts/post/update/{id}")
