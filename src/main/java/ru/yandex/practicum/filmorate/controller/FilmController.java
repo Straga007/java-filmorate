@@ -28,7 +28,7 @@ public class FilmController {
     }
 
     @PutMapping("/films")
-    public Film updateFilm( @RequestBody Film filmToUpdate) {
+    public Film updateFilm(@RequestBody Film filmToUpdate) {
         Film existingFilm = posts.stream()
                 .filter(f -> f.getId() == filmToUpdate.getId())
                 .findFirst()
