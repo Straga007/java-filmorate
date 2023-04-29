@@ -5,11 +5,17 @@ import java.time.LocalDate;
 import lombok.Data;
 import lombok.NonNull;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 @Data
 public class User {
     private static int nextId = 1;
 
     private int id;
+    @NotEmpty(message = "Email cannot be empty")
+    @Email(message = "Email should be valid")
     private String email;
     private String login;
     private String name;

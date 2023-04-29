@@ -15,18 +15,19 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class FilmController {
     private final List<Film> posts = new ArrayList<>();
-
+    private int lastAddedFilmId = 0;
 
     @PostMapping(value = "/films")
     public ResponseEntity<Film> createFilm(@RequestBody Film film) {
         try {
-            Film newFilm = new Film(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getId());
+            Film newFilm = new Film(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), ++lastAddedFilmId);
             posts.add(newFilm);
-            return ResponseEntity.ok(film);
+            return ResponseEntity.ok(newFilm);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
+
 
     @PutMapping("/films")
     public Film updateFilm(@RequestBody Film filmToUpdate) {
