@@ -12,11 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 public class Film {
     private static int nextId = 1;
 
-    int id;
-    String name;
-    String description;
-    LocalDate releaseDate;
-    long duration;
+    private int id;
+    private String name;
+    private String description;
+    private LocalDate releaseDate;
+    private long duration;
 
     public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration, int id) {
         if (name.isEmpty()) {
