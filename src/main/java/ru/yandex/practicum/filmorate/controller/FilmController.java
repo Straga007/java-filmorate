@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -13,19 +14,19 @@ import java.util.*;
 @Slf4j
 public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
+    private static int nextId = 0;
 
     @PostMapping(value = "/films")
     public ResponseEntity<Film> createFilm(@RequestBody Film film) {
         try {
             validate(film);
+            int id = film.getId() == 0 ? ++nextId : film.getId();
+            Film newFilm = new Film(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), id);
+            films.put(newFilm.getId(), newFilm);
+            return ResponseEntity.ok(newFilm);
         } catch (IllegalArgumentException e) {
             throw new ValidationException(e.getMessage());
         }
-
-        Film newFilm = new Film(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getId());
-        films.put(newFilm.getId(), newFilm);
-        return ResponseEntity.ok(newFilm);
-
     }
 
 

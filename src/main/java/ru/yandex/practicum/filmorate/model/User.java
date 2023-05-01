@@ -10,7 +10,6 @@ import javax.validation.constraints.NotEmpty;
 
 @Data
 public class User {
-    private static int nextId = 0;
 
     private int id;
     private String email;
@@ -20,10 +19,14 @@ public class User {
 
     public User(@NotEmpty @Email String email, @NonNull String login, String name, @NonNull LocalDate birthday, int id) {
 
-        this.id = (id == 0) ? nextId++ : id;
+        this.id = id;
         this.email = email;
         this.login = login;
         this.name = name == null || name.trim().isEmpty() ? login : name;
         this.birthday = birthday;
     }
+
+
+
+
 }
