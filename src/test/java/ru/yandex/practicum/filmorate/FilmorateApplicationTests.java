@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -13,12 +15,14 @@ import java.time.LocalDate;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class FilmorateApplicationTests {
+    private static final UserController userController = new UserController();
+    private static final FilmController filmController = new FilmController();
 
 
     @Test
     void testInvalidUser() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            new User("", " ", "   ", LocalDate.now().plusDays(1),1);
+            userController.validate((new User("", " ", "   ", LocalDate.now().plusDays(1), 1)));
         });
     }
 
@@ -28,7 +32,7 @@ public class FilmorateApplicationTests {
         String login = "Jenry";
         String name = "";
         LocalDate dateOfBirth = LocalDate.now().minusDays(1);
-        User user = new User(email, login, name, dateOfBirth,1);
+        User user = new User(email, login, name, dateOfBirth, 1);
         Assertions.assertNotNull(user);
 
     }
@@ -41,7 +45,7 @@ public class FilmorateApplicationTests {
         long duration = -1;
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            new Film(name, description, releaseDate, duration,1);
+            filmController.validate(new Film(name, description, releaseDate, duration, 1));
         });
     }
 
@@ -52,7 +56,7 @@ public class FilmorateApplicationTests {
         LocalDate releaseDate = LocalDate.of(1999, 3, 31);
         long duration = 136;
 
-        Film film = new Film(name, description, releaseDate, duration,1);
+        Film film = new Film(name, description, releaseDate, duration, 1);
 
         Assertions.assertNotNull(film);
     }
