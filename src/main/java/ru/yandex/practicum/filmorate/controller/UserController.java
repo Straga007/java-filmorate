@@ -15,7 +15,6 @@ public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
     private static int nextId = 0;
 
-
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         try {
