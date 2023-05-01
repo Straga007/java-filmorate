@@ -40,7 +40,6 @@ public class UserController {
 
         existingUser.setEmail(userToUpdate.getEmail());
         existingUser.setBirthday(userToUpdate.getBirthday());
-        existingUser.setId(userToUpdate.getId());
         existingUser.setLogin(userToUpdate.getLogin());
         existingUser.setName(userToUpdate.getName());
 

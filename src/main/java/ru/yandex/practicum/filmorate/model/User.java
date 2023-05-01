@@ -20,7 +20,7 @@ public class User {
 
     public User(@NotEmpty @Email String email, @NonNull String login, String name, @NonNull LocalDate birthday, int id) {
 
-        this.id = id == 0 ? nextId++ : id;
+        this.id = (id == 0) ? nextId++ : id;
         this.email = email;
         this.login = login;
         this.name = name == null || name.trim().isEmpty() ? login : name;
