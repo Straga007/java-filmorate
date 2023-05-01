@@ -82,9 +82,9 @@ public class FilmController {
     }
 
     @GetMapping("/films")
-    public Map<Integer, Film> findAll() {
+    public List<Film> findAll() {
         log.info("Текущее количество постов: {}", films.size());
-        return films;
+        return new ArrayList<>(films.values());
     }
 
 }
