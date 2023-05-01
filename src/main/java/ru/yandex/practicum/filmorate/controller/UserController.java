@@ -81,9 +81,9 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public Map<Integer, User> findAllUsers() {
+    public List<User> findAllUsers() {
         log.info("Текущее количество постов: {}", users.size());
-        return users;
+        return new ArrayList<>(users.values());
     }
 
 }
