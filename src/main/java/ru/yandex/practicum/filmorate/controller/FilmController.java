@@ -1,46 +1,71 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @RestController
 @Slf4j
 public class FilmController {
-    private final List<Film> posts = new ArrayList<>();
-    private int lastAddedFilmId = 0;
+    private final Map<Integer, Film> films = new HashMap<>();
 
     @PostMapping(value = "/films")
     public ResponseEntity<Film> createFilm(@RequestBody Film film) {
         try {
-            Film newFilm = new Film(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), ++lastAddedFilmId);
-            posts.add(newFilm);
-            return ResponseEntity.ok(newFilm);
+            validate(film);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new ValidationException(e.getMessage());
         }
+
+        Film newFilm = new Film(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getId());
+        films.put(newFilm.getId(), newFilm);
+        return ResponseEntity.ok(newFilm);
+
     }
 
 
     @PutMapping("/films")
-    public Film updateFilm(@RequestBody Film filmToUpdate) {
-        Film existingFilm = posts.stream()
-                .filter(f -> f.getId() == filmToUpdate.getId())
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("No film with id " + filmToUpdate.getId()));
+    public ResponseEntity<Film> updateFilm(@RequestBody Film filmToUpdate) {
+        Film existingFilm = films.get(filmToUpdate.getId());
+        if (existingFilm == null) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            validate(filmToUpdate);
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException(e.getMessage());
+        }
 
-        String name = filmToUpdate.getName();
-        String description = filmToUpdate.getDescription();
-        LocalDate releaseDate = filmToUpdate.getReleaseDate();
-        long duration = filmToUpdate.getDuration();
-        int newId = filmToUpdate.getId();
+            existingFilm.setName(filmToUpdate.getName());
+            existingFilm.setDescription(filmToUpdate.getDescription());
+            existingFilm.setReleaseDate(filmToUpdate.getReleaseDate());
+            existingFilm.setDuration(filmToUpdate.getDuration());
+            return ResponseEntity.ok(existingFilm);
+
+    }
+
+
+    @DeleteMapping("/films/{id}")
+    public ResponseEntity<Void> deleteFilm(@PathVariable int id) {
+        Film filmToDelete = films.get(id);
+        if (filmToDelete != null) {
+            films.remove(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    private void validate(Film film) throws IllegalArgumentException {
+        String name = film.getName();
+        String description = film.getDescription();
+        LocalDate releaseDate = film.getReleaseDate();
+        long duration = film.getDuration();
 
         if (name.isEmpty()) {
             throw new IllegalArgumentException("name can not be empty");
@@ -54,38 +79,12 @@ public class FilmController {
         if (duration <= 0) {
             throw new IllegalArgumentException("The duration of the film should be positive");
         }
-        existingFilm.setId(newId);
-        existingFilm.setName(name);
-        existingFilm.setDescription(description);
-        existingFilm.setReleaseDate(releaseDate);
-        existingFilm.setDuration(duration);
-
-        log.info("Updating film with id {}: {}", filmToUpdate.getId(), existingFilm);
-
-        return existingFilm;
-    }
-
-    @DeleteMapping("/films")
-    public ResponseEntity<Void> deleteFilm(@PathVariable int id) {
-        Film filmToDelete = null;
-        for (Film film : posts) {
-            if (film.getId() == id) {
-                filmToDelete = film;
-                break;
-            }
-        }
-        if (filmToDelete != null) {
-            posts.remove(filmToDelete);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
     }
 
     @GetMapping("/films")
-    public List<Film> findAll() {
-        log.info("Текущее количество постов: {}", posts.size());
-        return posts;
+    public Map<Integer, Film> findAll() {
+        log.info("Текущее количество постов: {}", films.size());
+        return films;
     }
 
 }
