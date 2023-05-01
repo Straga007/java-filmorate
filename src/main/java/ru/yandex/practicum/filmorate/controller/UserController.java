@@ -37,9 +37,7 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             throw new ValidationException(e.getMessage());
         }
-        if (userToUpdate.getName() != null) {
-            existingUser.setName(userToUpdate.getName().trim().isEmpty() ? existingUser.getLogin() : userToUpdate.getName().trim());
-        }
+
         existingUser.setEmail(userToUpdate.getEmail());
         existingUser.setBirthday(userToUpdate.getBirthday());
         existingUser.setId(userToUpdate.getId());

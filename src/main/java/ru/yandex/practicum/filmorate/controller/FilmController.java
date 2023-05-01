@@ -30,11 +30,9 @@ public class FilmController {
 
 
     @PutMapping("/films")
-    public ResponseEntity<Film> updateFilm(@RequestBody Film filmToUpdate) {
+    public Film updateFilm(@RequestBody Film filmToUpdate) {
         Film existingFilm = films.get(filmToUpdate.getId());
-        if (existingFilm == null) {
-            return ResponseEntity.notFound().build();
-        }
+
         try {
             validate(filmToUpdate);
         } catch (IllegalArgumentException e) {
@@ -45,7 +43,7 @@ public class FilmController {
         existingFilm.setDescription(filmToUpdate.getDescription());
         existingFilm.setReleaseDate(filmToUpdate.getReleaseDate());
         existingFilm.setDuration(filmToUpdate.getDuration());
-        return ResponseEntity.ok(existingFilm);
+        return existingFilm;
 
     }
 
