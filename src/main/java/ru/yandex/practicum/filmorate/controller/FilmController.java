@@ -41,11 +41,11 @@ public class FilmController {
             throw new ValidationException(e.getMessage());
         }
 
-            existingFilm.setName(filmToUpdate.getName());
-            existingFilm.setDescription(filmToUpdate.getDescription());
-            existingFilm.setReleaseDate(filmToUpdate.getReleaseDate());
-            existingFilm.setDuration(filmToUpdate.getDuration());
-            return ResponseEntity.ok(existingFilm);
+        existingFilm.setName(filmToUpdate.getName());
+        existingFilm.setDescription(filmToUpdate.getDescription());
+        existingFilm.setReleaseDate(filmToUpdate.getReleaseDate());
+        existingFilm.setDuration(filmToUpdate.getDuration());
+        return ResponseEntity.ok(existingFilm);
 
     }
 
@@ -61,7 +61,7 @@ public class FilmController {
         }
     }
 
-    private void validate(Film film) throws IllegalArgumentException {
+    public void validate(Film film) throws IllegalArgumentException {
         String name = film.getName();
         String description = film.getDescription();
         LocalDate releaseDate = film.getReleaseDate();

@@ -64,7 +64,7 @@ public class UserController {
         }
     }
 
-    private void validate(User user) throws IllegalArgumentException {
+    public void validate(User user) throws IllegalArgumentException {
         String email = user.getEmail();
         String login = user.getLogin();
         LocalDate birthday = user.getBirthday();
