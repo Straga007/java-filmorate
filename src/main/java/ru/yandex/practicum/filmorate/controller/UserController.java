@@ -13,18 +13,20 @@ import java.util.*;
 @Slf4j
 public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
+    private static int nextId = 0;
+
 
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         try {
             validate(user);
+            int id = user.getId() == 0 ? ++nextId : user.getId();
+            User newUser = new User(user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), id);
+            users.put(newUser.getId(), newUser);
+            return ResponseEntity.ok(newUser);
         } catch (IllegalArgumentException e) {
             throw new ValidationException(e.getMessage());
         }
-        User newUser = new User(user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
-        users.put(newUser.getId(), newUser);
-        return ResponseEntity.ok(newUser);
-
     }
 
 

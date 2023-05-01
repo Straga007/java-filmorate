@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 @NonNull
 @ToString
 public class Film {
-    private static int nextId = 0;
 
     private int id;
     private String name;
@@ -20,7 +19,7 @@ public class Film {
 
     public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration, int id) {
 
-        this.id = (id == 0) ? nextId++ : id;
+        this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
