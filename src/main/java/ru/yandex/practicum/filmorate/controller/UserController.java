@@ -1,69 +1,51 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @RestController
 @Slf4j
 public class UserController {
-    private final List<User> users = new ArrayList<>();
+    private final Map<Integer, User> users = new HashMap<>();
 
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         try {
-            User newUser = new User(user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
-            users.add(newUser);
-            return ResponseEntity.ok(newUser);
+            validate(user);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new ValidationException(e.getMessage());
         }
+        User newUser = new User(user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+        users.put(newUser.getId(), newUser);
+        return ResponseEntity.ok(newUser);
+
     }
 
 
     @PutMapping("/users")
     public User updateUser(@RequestBody User userToUpdate) {
-        User existingUser = users.stream()
-                .filter(u -> u.getId() == userToUpdate.getId())
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("No user with id " + userToUpdate.getId()));
+        User existingUser = users.get(userToUpdate.getId());
 
-        String email = userToUpdate.getEmail();
-        String login = userToUpdate.getLogin();
-        String name = userToUpdate.getName();
-        LocalDate birthday = userToUpdate.getBirthday();
-
-        if (email != null && !email.trim().isEmpty()) {
-            if (!email.contains("@")) {
-                throw new IllegalArgumentException("Email must contain @ symbol");
-            }
-            existingUser.setEmail(email.trim());
+        try {
+            validate(userToUpdate);
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException(e.getMessage());
         }
-
-        if (login != null && !login.trim().isEmpty()) {
-            if (login.contains(" ")) {
-                throw new IllegalArgumentException("Login must not contain spaces");
-            }
-            existingUser.setLogin(login.trim());
+        if (userToUpdate.getName() != null) {
+            existingUser.setName(userToUpdate.getName().trim().isEmpty() ? existingUser.getLogin() : userToUpdate.getName().trim());
         }
+        existingUser.setEmail(userToUpdate.getEmail());
+        existingUser.setBirthday(userToUpdate.getBirthday());
+        existingUser.setId(userToUpdate.getId());
+        existingUser.setLogin(userToUpdate.getLogin());
+        existingUser.setName(userToUpdate.getName());
 
-        if (name != null) {
-            existingUser.setName(name.trim().isEmpty() ? existingUser.getLogin() : name.trim());
-        }
-
-        if (birthday != null) {
-            if (birthday.isAfter(LocalDate.now())) {
-                throw new IllegalArgumentException("Date of birth cannot be in the future");
-            }
-            existingUser.setBirthday(birthday);
-        }
 
         log.info("Updating user with id {}: {}", userToUpdate.getId(), existingUser);
 
@@ -71,25 +53,36 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/users")
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable int id) {
-        User userToDelete = null;
-        for (User user : users) {
-            if (user.getId() == id) {
-                userToDelete = user;
-                break;
-            }
-        }
+        User userToDelete = users.get(id);
         if (userToDelete != null) {
-            users.remove(userToDelete);
+            users.remove(id);
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
+    private void validate(User user) throws IllegalArgumentException {
+        String email = user.getEmail();
+        String login = user.getLogin();
+        LocalDate birthday = user.getBirthday();
+
+        if (email.trim().isEmpty() || !email.contains("@")) {
+            throw new IllegalArgumentException("Email must contain @ symbol");
+        }
+        if (login.trim().isEmpty() || login.contains(" ")) {
+            throw new IllegalArgumentException("Login must not contain spaces");
+        }
+        if (birthday.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Date of birth cannot be in the future");
+        }
+    }
+
     @GetMapping("/users")
-    public List<User> findAllUsers() {
+    public Map<Integer, User> findAllUsers() {
+        log.info("Текущее количество постов: {}", users.size());
         return users;
     }
 
