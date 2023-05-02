@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
+
 import java.time.LocalDate;
 import java.util.*;
 
@@ -17,33 +18,27 @@ public class UserController {
 
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        try {
-            validate(user);
-            int id = user.getId() == 0 ? ++nextId : user.getId();
-            User newUser = new User(user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), id);
-            users.put(newUser.getId(), newUser);
-            return ResponseEntity.ok(newUser);
-        } catch (IllegalArgumentException e) {
-            throw new ValidationException(e.getMessage());
-        }
+        validate(user);
+        int id = ++nextId;
+        User newUser = new User(user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), id);
+        users.put(newUser.getId(), newUser);
+        return ResponseEntity.ok(newUser);
+
     }
 
 
     @PutMapping("/users")
     public User updateUser(@RequestBody User userToUpdate) {
         User existingUser = users.get(userToUpdate.getId());
-
-        try {
-            validate(userToUpdate);
-        } catch (IllegalArgumentException e) {
-            throw new ValidationException(e.getMessage());
+        if (existingUser == null) {
+            throw new ValidationException("User with id " + userToUpdate.getId() + " not found");
         }
+        validate(userToUpdate);
 
         existingUser.setEmail(userToUpdate.getEmail());
         existingUser.setBirthday(userToUpdate.getBirthday());
         existingUser.setLogin(userToUpdate.getLogin());
         existingUser.setName(userToUpdate.getName());
-
 
         log.info("Updating user with id {}: {}", userToUpdate.getId(), existingUser);
 
@@ -59,7 +54,6 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
-
 
     public void validate(User user) {
         String email = user.getEmail();

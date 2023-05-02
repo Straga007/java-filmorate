@@ -20,9 +20,9 @@ public class FilmController {
     public ResponseEntity<Film> createFilm(@RequestBody Film film) {
         validate(film);
         int id = ++nextId;
-        Film newFilm = new Film(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), id);
-        films.put(newFilm.getId(), newFilm);
-        return ResponseEntity.ok(newFilm);
+        film.setId(id);
+        films.put(film.getId(), film);
+        return ResponseEntity.ok(film);
 
     }
 
@@ -30,6 +30,9 @@ public class FilmController {
     @PutMapping("/films")
     public Film updateFilm(@RequestBody Film filmToUpdate) {
         Film existingFilm = films.get(filmToUpdate.getId());
+        if (existingFilm == null) {
+            throw new ValidationException("Film with id " + filmToUpdate.getId() + " not found");
+        }
         validate(filmToUpdate);
 
         existingFilm.setName(filmToUpdate.getName());
