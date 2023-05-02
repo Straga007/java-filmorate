@@ -5,9 +5,6 @@ import java.time.LocalDate;
 import lombok.Data;
 import lombok.NonNull;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-
 @Data
 public class User {
 
@@ -17,7 +14,7 @@ public class User {
     private String name;
     private LocalDate birthday;
 
-    public User(@NotEmpty @Email String email, @NonNull String login, String name, @NonNull LocalDate birthday, int id) {
+    public User(String email, @NonNull String login, String name, @NonNull LocalDate birthday, int id) {
 
         this.id = id;
         this.email = email;

@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -21,7 +22,7 @@ public class FilmorateApplicationTests {
 
     @Test
     void testInvalidUser() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        Assertions.assertThrows(ValidationException.class, () -> {
             userController.validate((new User("", " ", "   ", LocalDate.now().plusDays(1), 1)));
         });
     }
@@ -44,7 +45,7 @@ public class FilmorateApplicationTests {
         LocalDate releaseDate = LocalDate.of(2021, 4, 27);
         long duration = -1;
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        Assertions.assertThrows(ValidationException.class, () -> {
             filmController.validate(new Film(name, description, releaseDate, duration, 1));
         });
     }

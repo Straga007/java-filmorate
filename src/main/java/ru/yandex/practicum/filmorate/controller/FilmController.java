@@ -13,46 +13,36 @@ import java.util.*;
 @Slf4j
 public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
+    private static final LocalDate invalidReleaseDate = LocalDate.of(1895, 12, 28);
     private static int nextId = 0;
 
     @PostMapping(value = "/films")
     public ResponseEntity<Film> createFilm(@RequestBody Film film) {
-        try {
-            validate(film);
-            int id = film.getId() == 0 ? ++nextId : film.getId();
-            Film newFilm = new Film(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), id);
-            films.put(newFilm.getId(), newFilm);
-            return ResponseEntity.ok(newFilm);
-        } catch (IllegalArgumentException e) {
-            throw new ValidationException(e.getMessage());
-        }
+        validate(film);
+        int id = film.getId() == 0 ? ++nextId : film.getId();
+        Film newFilm = new Film(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), id);
+        films.put(newFilm.getId(), newFilm);
+        return ResponseEntity.ok(newFilm);
+
     }
 
 
     @PutMapping("/films")
     public Film updateFilm(@RequestBody Film filmToUpdate) {
         Film existingFilm = films.get(filmToUpdate.getId());
-
-        try {
-            validate(filmToUpdate);
-        } catch (IllegalArgumentException e) {
-            throw new ValidationException(e.getMessage());
-        }
+        validate(filmToUpdate);
 
         existingFilm.setName(filmToUpdate.getName());
         existingFilm.setDescription(filmToUpdate.getDescription());
         existingFilm.setReleaseDate(filmToUpdate.getReleaseDate());
         existingFilm.setDuration(filmToUpdate.getDuration());
         return existingFilm;
-
     }
 
 
     @DeleteMapping("/films/{id}")
     public ResponseEntity<Void> deleteFilm(@PathVariable int id) {
-        Film filmToDelete = films.get(id);
-        if (filmToDelete != null) {
-            films.remove(id);
+        if (films.remove(id) != null) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
@@ -71,7 +61,7 @@ public class FilmController {
         if (description.length() > 200) {
             throw new ValidationException("description length cannot be more than 200 characters");
         }
-        if (releaseDate.isBefore(LocalDate.of(1895, 12, 28))) {
+        if (releaseDate.isBefore(invalidReleaseDate)) {
             throw new ValidationException("The release date should be after December 28, 1895");
         }
         if (duration <= 0) {
