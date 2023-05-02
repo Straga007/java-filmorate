@@ -53,14 +53,13 @@ public class UserController {
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable int id) {
-        User userToDelete = users.get(id);
-        if (userToDelete != null) {
-            users.remove(id);
+        if (users.remove(id) != null) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+
 
     public void validate(User user) {
         String email = user.getEmail();
