@@ -19,7 +19,7 @@ public class FilmController {
     @PostMapping(value = "/films")
     public ResponseEntity<Film> createFilm(@RequestBody Film film) {
         validate(film);
-        int id = film.getId() == 0 ? ++nextId : film.getId();
+        int id = ++nextId;
         Film newFilm = new Film(film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), id);
         films.put(newFilm.getId(), newFilm);
         return ResponseEntity.ok(newFilm);
