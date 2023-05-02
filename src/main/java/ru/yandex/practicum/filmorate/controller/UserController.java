@@ -62,19 +62,19 @@ public class UserController {
         }
     }
 
-    public void validate(User user) throws IllegalArgumentException {
+    public void validate(User user) {
         String email = user.getEmail();
         String login = user.getLogin();
         LocalDate birthday = user.getBirthday();
 
         if (email.trim().isEmpty() || !email.contains("@")) {
-            throw new IllegalArgumentException("Email must contain @ symbol");
+            throw new ValidationException("Email must contain @ symbol");
         }
         if (login.trim().isEmpty() || login.contains(" ")) {
-            throw new IllegalArgumentException("Login must not contain spaces");
+            throw new ValidationException("Login must not contain spaces");
         }
         if (birthday.isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("Date of birth cannot be in the future");
+            throw new ValidationException("Date of birth cannot be in the future");
         }
     }
 
