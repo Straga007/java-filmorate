@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -31,7 +32,7 @@ public class FilmController {
     public Film updateFilm(@RequestBody Film filmToUpdate) {
         Film existingFilm = films.get(filmToUpdate.getId());
         if (existingFilm == null) {
-            throw new ValidationException("Film with id " + filmToUpdate.getId() + " not found");
+            throw new InternalServerException("Film with id " + filmToUpdate.getId() + " not found");
         }
         validate(filmToUpdate);
 
