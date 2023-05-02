@@ -59,23 +59,23 @@ public class FilmController {
         }
     }
 
-    public void validate(Film film) throws IllegalArgumentException {
+    public void validate(Film film) {
         String name = film.getName();
         String description = film.getDescription();
         LocalDate releaseDate = film.getReleaseDate();
         long duration = film.getDuration();
 
         if (name.isEmpty()) {
-            throw new IllegalArgumentException("name can not be empty");
+            throw new ValidationException("name can not be empty");
         }
         if (description.length() > 200) {
-            throw new IllegalArgumentException("description length cannot be more than 200 characters");
+            throw new ValidationException("description length cannot be more than 200 characters");
         }
         if (releaseDate.isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new IllegalArgumentException("The release date should be after December 28, 1895");
+            throw new ValidationException("The release date should be after December 28, 1895");
         }
         if (duration <= 0) {
-            throw new IllegalArgumentException("The duration of the film should be positive");
+            throw new ValidationException("The duration of the film should be positive");
         }
     }
 
