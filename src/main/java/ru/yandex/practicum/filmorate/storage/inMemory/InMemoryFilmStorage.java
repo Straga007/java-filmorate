@@ -21,8 +21,12 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> findPopularFilms(Integer count) {
-        return null;
+        List<Film> allFilms = new ArrayList<>(films.values());
+        allFilms.sort((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()));
+        int filmsCount = count != null ? count : 10;
+        return allFilms.subList(0, Math.min(filmsCount, allFilms.size()));
     }
+
 
     @Override
     @GetMapping("/films")
