@@ -16,6 +16,6 @@ public interface UserStorage {
 
     User updateUser(@RequestBody User userToUpdate);
 
-    User findUserById(@PathVariable int id);
+    User findUser(@PathVariable int id);
 
 }

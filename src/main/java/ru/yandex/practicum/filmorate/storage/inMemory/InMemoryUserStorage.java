@@ -64,7 +64,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     @GetMapping("/users/{id}")
-    public User findUserById(@PathVariable int id) {
+    public User findUser(@PathVariable int id) {
         if (users.get(id) != null) {
             return users.get(id);
         } else {
