@@ -27,6 +27,11 @@ public class FilmController {
 
     }
 
+    @GetMapping("/films")
+    public List<Film> findAll() {
+        log.info("Текущее количество постов: {}", films.size());
+        return new ArrayList<>(films.values());
+    }
 
     @PutMapping("/films")
     public Film updateFilm(@RequestBody Film filmToUpdate) {
@@ -73,10 +78,5 @@ public class FilmController {
         }
     }
 
-    @GetMapping("/films")
-    public List<Film> findAll() {
-        log.info("Текущее количество постов: {}", films.size());
-        return new ArrayList<>(films.values());
-    }
 
 }
