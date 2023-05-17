@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.Data;
 import lombok.NonNull;
@@ -13,6 +15,8 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
+    public Set<Integer> friends;
+
 
     public User(String email, @NonNull String login, String name, @NonNull LocalDate birthday, int id) {
 
@@ -21,6 +25,14 @@ public class User {
         this.login = login;
         this.name = name == null || name.trim().isEmpty() ? login : name;
         this.birthday = birthday;
+        this.friends = new HashSet<>();
+
+    }
+    public void setFriend(int ID){
+        friends.add(ID);
     }
 
+    public Set<Integer> getFriends() {
+        return friends;
+    }
 }
