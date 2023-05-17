@@ -1,5 +1,8 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -7,11 +10,12 @@ import java.util.Collection;
 public interface UserStorage {
 
     Collection<User> findAll();
+    ResponseEntity<Void> deleteUser(@PathVariable int id);
 
-    User createUser(User user);
+    ResponseEntity<User> createUser(@RequestBody User user);
 
-    User updateUser(User user);
+    User updateUser(@RequestBody User userToUpdate);
 
-    User findUserById(Integer userId);
+    User findUserById(@PathVariable int id);
 
 }

@@ -13,50 +13,8 @@ import java.util.*;
 @RestController
 @Slf4j
 public class FilmController {
-    private final Map<Integer, Film> films = new HashMap<>();
     private static final LocalDate invalidReleaseDate = LocalDate.of(1895, 12, 28);
-    private static int nextId = 0;
 
-    @PostMapping(value = "/films")
-    public ResponseEntity<Film> createFilm(@RequestBody Film film) {
-        validate(film);
-        int id = ++nextId;
-        film.setId(id);
-        films.put(film.getId(), film);
-        return ResponseEntity.ok(film);
-
-    }
-
-    @GetMapping("/films")
-    public List<Film> findAll() {
-        log.info("Текущее количество постов: {}", films.size());
-        return new ArrayList<>(films.values());
-    }
-
-    @PutMapping("/films")
-    public Film updateFilm(@RequestBody Film filmToUpdate) {
-        Film existingFilm = films.get(filmToUpdate.getId());
-        if (existingFilm == null) {
-            throw new InternalServerException("Film with id " + filmToUpdate.getId() + " not found");
-        }
-        validate(filmToUpdate);
-
-        existingFilm.setName(filmToUpdate.getName());
-        existingFilm.setDescription(filmToUpdate.getDescription());
-        existingFilm.setReleaseDate(filmToUpdate.getReleaseDate());
-        existingFilm.setDuration(filmToUpdate.getDuration());
-        return existingFilm;
-    }
-
-
-    @DeleteMapping("/films/{id}")
-    public ResponseEntity<Void> deleteFilm(@PathVariable int id) {
-        if (films.remove(id) != null) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
 
     public void validate(Film film) {
         String name = film.getName();
