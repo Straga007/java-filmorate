@@ -2,7 +2,10 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+
+import java.util.Collection;
 
 @Service
 public class FilmService {
@@ -12,10 +15,17 @@ public class FilmService {
         this.filmStorage = filmStorage;
     }
     public void addLike(int filmId, Integer userId){
-        filmStorage.findFilm(filmId).setLikes(userId);
+        filmStorage.findFilm(filmId).setLikesIncrease(userId);
     }
+    public void deleteLike(int filmId, Integer userId){
+        filmStorage.findFilm(filmId).setLikesDecrease(userId);
+    }
+
     public int getAllLikes(int filmId){
         return filmStorage.findFilm(filmId).getLikes().size();
+    }
+    public Collection<Film> getPopularFilms(Integer count) {
+        return filmStorage.findPopularFilms(count);
     }
 
 }
