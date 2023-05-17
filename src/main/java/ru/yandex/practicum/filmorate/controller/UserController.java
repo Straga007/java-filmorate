@@ -27,6 +27,11 @@ public class UserController {
 
     }
 
+    @GetMapping("/users")
+    public List<User> findAllUsers() {
+        log.info("Текущее количество постов: {}", users.size());
+        return new ArrayList<>(users.values());
+    }
 
     @PutMapping("/users")
     public User updateUser(@RequestBody User userToUpdate) {
@@ -72,10 +77,5 @@ public class UserController {
         }
     }
 
-    @GetMapping("/users")
-    public List<User> findAllUsers() {
-        log.info("Текущее количество постов: {}", users.size());
-        return new ArrayList<>(users.values());
-    }
 
 }
