@@ -36,6 +36,7 @@ public class InMemoryUserStorage implements UserStorage {
         }
         return commonFriends;
     }
+
     @Override
     @GetMapping("/users")
     public List<User> findAll() {
@@ -89,7 +90,6 @@ public class InMemoryUserStorage implements UserStorage {
             throw new NoSuchElementException();
         }
     }
-
 
 
     public void validate(User user) {

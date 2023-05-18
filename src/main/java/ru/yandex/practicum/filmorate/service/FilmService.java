@@ -10,20 +10,24 @@ import java.util.Collection;
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
+
     @Autowired
     public FilmService(FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
-    public void addLike(int filmId, Integer userId){
+
+    public void addLike(int filmId, Integer userId) {
         filmStorage.findFilm(filmId).setLikesIncrease(userId);
     }
-    public void deleteLike(int filmId, Integer userId){
+
+    public void deleteLike(int filmId, Integer userId) {
         filmStorage.findFilm(filmId).setLikesDecrease(userId);
     }
 
-    public int getAllLikes(int filmId){
+    public int getAllLikes(int filmId) {
         return filmStorage.findFilm(filmId).getLikes().size();
     }
+
     public Collection<Film> getPopularFilms(Integer count) {
         return filmStorage.findPopularFilms(count);
     }
