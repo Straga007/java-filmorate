@@ -17,7 +17,25 @@ public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
     private static int nextId = 0;
 
-
+    @Override
+    public Collection<User> findCommonFriends(int id, int otherId) {
+        User user = users.get(id);
+        User otherUser = users.get(otherId);
+        if (user == null || otherUser == null) {
+            throw new NoSuchElementException("User not found");
+        }
+        Set<Integer> userFriends = new HashSet<>(user.getFriends());
+        Set<Integer> otherUserFriends = new HashSet<>(otherUser.getFriends());
+        userFriends.retainAll(otherUserFriends);
+        List<User> commonFriends = new ArrayList<>();
+        for (Integer friendId : userFriends) {
+            User friend = users.get(friendId);
+            if (friend != null) {
+                commonFriends.add(friend);
+            }
+        }
+        return commonFriends;
+    }
     @Override
     @GetMapping("/users")
     public List<User> findAll() {
@@ -71,6 +89,8 @@ public class InMemoryUserStorage implements UserStorage {
             throw new NoSuchElementException();
         }
     }
+
+
 
     public void validate(User user) {
         String email = user.getEmail();

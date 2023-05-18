@@ -17,5 +17,5 @@ public interface UserStorage {
     User updateUser(@RequestBody User userToUpdate);
 
     User findUser(@PathVariable int id);
-
+    Collection<User> findCommonFriends(int id, int otherId);
 }

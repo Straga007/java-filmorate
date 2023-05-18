@@ -31,6 +31,9 @@ public class User {
     public void setFriend(int ID){
         friends.add(ID);
     }
+    public void delFriend(int ID){
+        friends.remove(ID);
+    }
 
     public Set<Integer> getFriends() {
         return friends;
