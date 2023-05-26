@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -47,7 +48,7 @@ public class InMemoryUserStorage implements UserStorage {
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable int id) {
         if (users.remove(id) != null) {
-            throw new InternalServerException("user with id:" + id + " not found");
+            return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -87,7 +88,8 @@ public class InMemoryUserStorage implements UserStorage {
         if (users.get(id) != null) {
             return users.get(id);
         } else {
-            throw new NoSuchElementException();
+            //throw new NoSuchElementException();
+            throw new NotFoundException("user with id:" + id + " not found");
         }
     }
 
