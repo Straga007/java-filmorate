@@ -18,25 +18,25 @@ public class FilmController {
         this.filmService = filmService;
     }
 
-    @PutMapping("film/{id}/like/{userId}")
+    @PutMapping("films/{id}/like/{userId}")
     public void addLike(@PathVariable("id") int filmId, @PathVariable("userId") int userId) {
         filmService.addLike(filmId, userId);
         log.info("Пользователь c id {} поставил лайк фильму с id {}", userId, filmId);
     }
 
-    @GetMapping("film/{id}/likes")
+    @GetMapping("films/{id}/likes")
     public int getAllLikes(@PathVariable int id) {
         return filmService.getAllLikes(id);
     }
 
-    @GetMapping("film/popular/{count}")
+    @GetMapping("films/popular/{count}")
     public Collection<Film> getPopularFilms(
             @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
         log.info("Получен запрос на вывод {} популярных фильмов", count);
         return filmService.getPopularFilms(count);
     }
 
-    @DeleteMapping("film/{id}/like/{userId}")
+    @DeleteMapping("films/{id}/like/{userId}")
     public void deleteLike(@PathVariable("id") Integer filmId, @PathVariable("userId") Integer userId) {
         filmService.deleteLike(filmId, userId);
         log.info("Пользователь c id {} удалил лайка с фильма с id {}", userId, filmId);
