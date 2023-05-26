@@ -19,7 +19,6 @@ public class User {
 
 
     public User(String email, @NonNull String login, String name, @NonNull LocalDate birthday, int id) {
-
         this.id = id;
         this.email = email;
         this.login = login;
