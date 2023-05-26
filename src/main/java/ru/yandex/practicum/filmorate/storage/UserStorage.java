@@ -10,6 +10,7 @@ import java.util.Collection;
 public interface UserStorage {
 
     Collection<User> findAll();
+
     ResponseEntity<Void> deleteUser(@PathVariable int id);
 
     ResponseEntity<User> createUser(@RequestBody User user);
@@ -17,5 +18,6 @@ public interface UserStorage {
     User updateUser(@RequestBody User userToUpdate);
 
     User findUser(@PathVariable int id);
+
     Collection<User> findCommonFriends(int id, int otherId);
 }
