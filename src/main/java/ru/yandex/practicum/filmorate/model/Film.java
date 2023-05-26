@@ -30,11 +30,11 @@ public class Film {
         this.likes = new HashSet<>();
     }
 
-    public void setLikesIncrease(int ID) {
-        likes.add(ID);
+    public void setLikesIncrease(int id) {
+        likes.add(id);
     }
 
-    public void setLikesDecrease(int ID) {
-        likes.remove(ID);
+    public void setLikesDecrease(int id) {
+        likes.remove(id);
     }
 }
