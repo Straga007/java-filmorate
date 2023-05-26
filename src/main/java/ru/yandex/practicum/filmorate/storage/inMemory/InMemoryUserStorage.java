@@ -47,7 +47,7 @@ public class InMemoryUserStorage implements UserStorage {
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable int id) {
         if (users.remove(id) != null) {
-            throw new InternalServerException("user with id:" +id+" not found");
+            throw new InternalServerException("user with id:" + id + " not found");
         } else {
             return ResponseEntity.notFound().build();
         }
