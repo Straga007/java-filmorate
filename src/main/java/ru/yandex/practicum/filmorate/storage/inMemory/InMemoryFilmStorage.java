@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -77,7 +78,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (films.get(id) != null) {
             return films.get(id);
         } else {
-            throw new NoSuchElementException();
+            throw new NotFoundException("Не нашли фильм с id="+id);
         }
     }
 
