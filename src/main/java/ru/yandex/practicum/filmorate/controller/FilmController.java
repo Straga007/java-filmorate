@@ -29,7 +29,7 @@ public class FilmController {
         return filmService.getAllLikes(id);
     }
 
-    @GetMapping("films/popular/{count}")
+    @GetMapping("/films/popular")
     public Collection<Film> getPopularFilms(
             @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
         log.info("Получен запрос на вывод {} популярных фильмов", count);
