@@ -35,7 +35,7 @@ public class UserService {
             }
             return friends;
         } catch (NotFoundException e) {
-            return Collections.emptyList(); // Возвращаем пустой список при исключении 404
+            return Collections.emptyList();
         }
     }
 
