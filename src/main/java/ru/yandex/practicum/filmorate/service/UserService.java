@@ -5,10 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -25,7 +22,11 @@ public class UserService {
     }
 
     public List<User> getAllFriend(int userId) {
-        Set<Integer> friendIds = userStorage.findUser(userId).getFriends();
+        User user = userStorage.findUser(userId);
+        if (user == null) {
+            return Collections.emptyList(); // Возвращаем пустой список, если пользователь не найден
+        }
+        Set<Integer> friendIds = user.getFriends();
         List<User> friends = new ArrayList<>();
         for (int friendId : friendIds) {
             User friend = userStorage.findUser(friendId);
