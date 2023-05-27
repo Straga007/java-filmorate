@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -22,19 +23,20 @@ public class UserService {
     }
 
     public List<User> getAllFriend(int userId) {
-        User user = userStorage.findUser(userId);
-        if (user == null) {
-            return Collections.emptyList(); // Возвращаем пустой список, если пользователь не найден
-        }
-        Set<Integer> friendIds = user.getFriends();
-        List<User> friends = new ArrayList<>();
-        for (int friendId : friendIds) {
-            User friend = userStorage.findUser(friendId);
-            if (friend != null) {
-                friends.add(friend);
+        try {
+
+            Set<Integer> friendIds = userStorage.findUser(userId).getFriends();
+            List<User> friends = new ArrayList<>();
+            for (int friendId : friendIds) {
+                User friend = userStorage.findUser(friendId);
+                if (friend != null) {
+                    friends.add(friend);
+                }
             }
+            return friends;
+        } catch (NotFoundException e) {
+            return Collections.emptyList(); // Возвращаем пустой список при исключении 404
         }
-        return friends;
     }
 
     public void delFriend(int userId, int friendId) {
