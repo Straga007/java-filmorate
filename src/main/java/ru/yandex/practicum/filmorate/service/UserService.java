@@ -18,8 +18,15 @@ public class UserService {
     }
 
     public void addFriend(int userId, int friendId) {
-        userStorage.findUser(userId).setFriend(friendId);
-        userStorage.findUser(friendId).setFriend(userId);
+        User user = userStorage.findUser(userId);
+        User friend = userStorage.findUser(friendId);
+
+        if (user == null || friend == null) {
+            throw new NotFoundException("User not found");
+        }
+
+        user.setFriend(friendId);
+        friend.setFriend(userId);
     }
 
     public List<User> getAllFriend(int userId) {
