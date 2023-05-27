@@ -25,7 +25,7 @@ public class UserController {
         log.info("Пользователь c id {} добавил в друзья пользователя с id {}", userId, friendId);
     }
 
-    @GetMapping("users/{id}/friends")
+    @GetMapping("users/{id}/friends/")
     public List<User> getAllFriend(@PathVariable int id) {
         return userService.getAllFriend(id);
     }
