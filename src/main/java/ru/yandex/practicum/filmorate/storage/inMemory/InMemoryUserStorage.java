@@ -88,7 +88,6 @@ public class InMemoryUserStorage implements UserStorage {
         if (users.get(id) != null) {
             return users.get(id);
         } else {
-            //throw new NoSuchElementException();
             throw new NotFoundException("user with id:" + id + " not found");
         }
     }

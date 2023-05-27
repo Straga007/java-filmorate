@@ -78,7 +78,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (films.get(id) != null) {
             return films.get(id);
         } else {
-            throw new NotFoundException("Не нашли фильм с id="+id);
+            throw new NotFoundException("Не нашли фильм с id=" + id);
         }
     }
 
