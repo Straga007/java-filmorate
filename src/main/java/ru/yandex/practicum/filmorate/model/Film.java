@@ -36,4 +36,8 @@ public class Film {
     public void setLikesDecrease(int id) {
         likes.remove(id);
     }
+
+    public boolean hasLiked(Integer userId) {
+        return likes.contains(userId);
+    }
 }

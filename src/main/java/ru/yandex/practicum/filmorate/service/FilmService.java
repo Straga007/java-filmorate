@@ -23,8 +23,8 @@ public class FilmService {
 
     public void deleteLike(int filmId, Integer userId) {
         Film film = filmStorage.findFilm(filmId);
-        if (film == null) {
-            throw new NotFoundException("Film not found");
+        if (!film.hasLiked(userId)) {
+            throw new NotFoundException("User with id " + userId + " has not liked the film with id " + filmId);
         }
         film.setLikesDecrease(userId);
     }
