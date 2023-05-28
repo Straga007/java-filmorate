@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.inMemory;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
@@ -46,22 +45,20 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable int id) {
-        if (users.remove(id) != null) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+    public void deleteUser(@PathVariable int id) {
+        if (users.remove(id) == null) {
+            throw new NotFoundException("User with id " + id + " not found");
         }
     }
 
     @Override
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public User createUser(@RequestBody User user) {
         validate(user);
         int id = ++nextId;
         User newUser = new User(user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), id);
         users.put(newUser.getId(), newUser);
-        return ResponseEntity.ok(newUser);
+        return user;
     }
 
     @Override
