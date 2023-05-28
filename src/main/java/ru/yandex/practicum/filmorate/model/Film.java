@@ -7,6 +7,8 @@ import java.util.Set;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.constraints.*;
+
 @Slf4j
 @Data
 @NonNull
@@ -14,9 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 public class Film {
 
     private int id;
+    @NotEmpty(message = "name can not be empty")
     private String name;
+    @Size(max = 200, message = "description length cannot be more than 200 characters")
     private String description;
+    @PastOrPresent(message = "the release date should be after December 28, 1895")
     private LocalDate releaseDate;
+    @Positive(message = "the duration of the film should be positive")
     private long duration;
     public Set<Integer> likes;
 

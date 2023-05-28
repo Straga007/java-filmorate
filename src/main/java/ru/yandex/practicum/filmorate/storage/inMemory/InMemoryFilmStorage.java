@@ -1,23 +1,23 @@
 package ru.yandex.practicum.filmorate.storage.inMemory;
 
 import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.*;
 
 
 @RestController
 @Component
-@Validated
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films = new HashMap<>();
     private Integer nextId = 0;
+    final LocalDate invalidReleaseDate = LocalDate.of(1895, 12, 28);
 
     @Override
     public Collection<Film> findPopularFilms(Integer count) {
@@ -36,7 +36,8 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     @PostMapping(value = "/films")
-    public Film createFilm(@Valid @RequestBody Film film) {
+    public Film createFilm(@RequestBody Film film) {
+        validate(film);
         int id = ++nextId;
         film.setId(id);
         films.put(film.getId(), film);
@@ -45,11 +46,12 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     @PutMapping("/films")
-    public Film updateFilm(@Valid @RequestBody Film filmToUpdate) {
+    public Film updateFilm(@RequestBody Film filmToUpdate) {
         Film existingFilm = films.get(filmToUpdate.getId());
         if (existingFilm == null) {
             throw new InternalServerException("Film with id " + filmToUpdate.getId() + " not found");
         }
+        validate(filmToUpdate);
 
         existingFilm.setName(filmToUpdate.getName());
         existingFilm.setDescription(filmToUpdate.getDescription());
@@ -70,10 +72,32 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     @GetMapping("/films/{id}")
     public Film findFilm(@PathVariable int id) {
-        Film film = films.get(id);
-        if (film == null) {
-            throw new NotFoundException("Film with id " + id + " not found");
+        if (films.get(id) != null) {
+            return films.get(id);
+        } else {
+            throw new NotFoundException("Не нашли фильм с id=" + id);
         }
-        return film;
     }
+
+
+    public void validate(Film film) {
+        String name = film.getName();
+        String description = film.getDescription();
+        LocalDate releaseDate = film.getReleaseDate();
+        long duration = film.getDuration();
+
+        if (name.isEmpty()) {
+            throw new ValidationException("name can not be empty");
+        }
+        if (description.length() > 200) {
+            throw new ValidationException("description length cannot be more than 200 characters");
+        }
+        if (releaseDate.isBefore(invalidReleaseDate)) {
+            throw new ValidationException("The release date should be after December 28, 1895");
+        }
+        if (duration <= 0) {
+            throw new ValidationException("The duration of the film should be positive");
+        }
+    }
+
 }
