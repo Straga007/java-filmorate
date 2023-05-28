@@ -63,8 +63,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     @DeleteMapping("/films/{id}")
     public void deleteFilm(@PathVariable int id) {
-        if (films.remove(id) == null)
-        {
+        if (films.remove(id) == null) {
             throw new NotFoundException("Film with id " + id + " not found");
         }
     }
