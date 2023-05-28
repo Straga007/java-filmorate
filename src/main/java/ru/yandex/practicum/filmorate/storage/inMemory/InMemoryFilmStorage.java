@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.inMemory;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
@@ -37,12 +36,12 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     @PostMapping(value = "/films")
-    public ResponseEntity<Film> createFilm(@RequestBody Film film) {
+    public Film createFilm(@RequestBody Film film) {
         validate(film);
         int id = ++nextId;
         film.setId(id);
         films.put(film.getId(), film);
-        return ResponseEntity.ok(film);
+        return film;
     }
 
     @Override
@@ -63,11 +62,10 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     @DeleteMapping("/films/{id}")
-    public ResponseEntity<Void> deleteFilm(@PathVariable int id) {
-        if (films.remove(id) != null) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+    public void deleteFilm(@PathVariable int id) {
+        if (films.remove(id) == null)
+        {
+            throw new NotFoundException("Film with id " + id + " not found");
         }
     }
 
