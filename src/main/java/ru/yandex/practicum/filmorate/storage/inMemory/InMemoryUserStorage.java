@@ -58,7 +58,7 @@ public class InMemoryUserStorage implements UserStorage {
         int id = ++nextId;
         User newUser = new User(user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), id);
         users.put(newUser.getId(), newUser);
-        return user;
+        return newUser;
     }
 
     @Override
