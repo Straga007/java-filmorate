@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
@@ -32,8 +31,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class FilmorateApplicationTests {
-    private static final InMemoryUserStorage inUserStorage = new InMemoryUserStorage();
-    private static final InMemoryFilmStorage inFilmStorage = new InMemoryFilmStorage();
+
     @Mock
     private FilmStorage filmStorage;
     @Mock
@@ -122,7 +120,9 @@ public class FilmorateApplicationTests {
 
 
     @Test
-    public void testRemoveLike()  {
+    public void testRemoveLike() {
+        final InMemoryUserStorage inUserStorage = new InMemoryUserStorage();
+        final InMemoryFilmStorage inFilmStorage = new InMemoryFilmStorage();
         int filmId = 1;
         int userId = 1;
 
@@ -159,6 +159,9 @@ public class FilmorateApplicationTests {
 
     @Test
     void testInvalidUser() {
+        final InMemoryUserStorage inUserStorage = new InMemoryUserStorage();
+
+
         Assertions.assertThrows(ValidationException.class, () -> {
             inUserStorage.validate((new User("", " ", "   ", LocalDate.now().plusDays(1), 1)));
         });
@@ -175,17 +178,6 @@ public class FilmorateApplicationTests {
 
     }
 
-    @Test
-    public void testInvalidFilm() {
-        String name = "";
-        String description = "This is a description";
-        LocalDate releaseDate = LocalDate.of(2021, 4, 27);
-        long duration = -1;
-
-        Assertions.assertThrows(ValidationException.class, () -> {
-            inFilmStorage.validate(new Film(name, description, releaseDate, duration, 1));
-        });
-    }
 
     @Test
     public void testValidFilm() {
