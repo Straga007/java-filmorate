@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -36,7 +37,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     @PostMapping(value = "/films")
-    public Film createFilm(@RequestBody Film film) {
+    public Film createFilm(@RequestBody @Valid Film film) {
         validate(film);
         int id = ++nextId;
         film.setId(id);
@@ -46,13 +47,12 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     @PutMapping("/films")
-    public Film updateFilm(@RequestBody Film filmToUpdate) {
+    public Film updateFilm(@RequestBody @Valid Film filmToUpdate) {
         Film existingFilm = films.get(filmToUpdate.getId());
         if (existingFilm == null) {
             throw new InternalServerException("Film with id " + filmToUpdate.getId() + " not found");
         }
         validate(filmToUpdate);
-
         existingFilm.setName(filmToUpdate.getName());
         existingFilm.setDescription(filmToUpdate.getDescription());
         existingFilm.setReleaseDate(filmToUpdate.getReleaseDate());
@@ -101,3 +101,4 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
 }
+
