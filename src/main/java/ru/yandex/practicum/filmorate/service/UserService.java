@@ -37,16 +37,16 @@ public class UserService {
         friend.setFriend(userId);
     }
 
-    public void findAll() {
-        userStorage.findAll();
+    public Collection<User> findAll() {
+        return userStorage.findAll();
     }
 
     public void updateUser(User userToUpdate) {
         userStorage.updateUser(userToUpdate);
     }
 
-    public void findUser(int id) {
-        userStorage.findUser(id);
+    public User findUser(int id) {
+        return userStorage.findUser(id);
     }
 
 

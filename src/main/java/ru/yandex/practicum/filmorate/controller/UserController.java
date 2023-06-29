@@ -32,8 +32,8 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public void findAll() {
-        userService.findAll();
+    public Collection<User> findAll() {
+        return userService.findAll();
     }
 
     @PutMapping("/users")
@@ -42,8 +42,8 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public void findUser(@PathVariable int id) {
-        userService.findUser(id);
+    public User findUser(@PathVariable int id) {
+        return userService.findUser(id);
     }
 
 
