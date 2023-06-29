@@ -3,8 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.InternalServerException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -42,6 +40,7 @@ public class UserController {
     public void updateUser(@RequestBody User userToUpdate) {
         userService.updateUser(userToUpdate);
     }
+
     @GetMapping("/users/{id}")
     public void findUser(@PathVariable int id) {
         userService.findUser(id);
