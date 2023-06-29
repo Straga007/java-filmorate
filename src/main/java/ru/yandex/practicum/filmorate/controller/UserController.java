@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -19,7 +21,34 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PutMapping("users/{id}/friends/{friendId}") // добавление в друзья
+    @PostMapping("/users")
+    public User createUser(@RequestBody User user) {
+        userService.createUser(user);
+        return user;
+    }
+
+    @DeleteMapping("/users/{id}")
+    public void deleteUser(@PathVariable int id) {
+        userService.deleteUser(id);
+        log.info("Пользователь c id {} был удален", id);
+    }
+
+    @GetMapping("/users")
+    public void findAll() {
+        userService.findAll();
+    }
+
+    @PutMapping("/users")
+    public void updateUser(@RequestBody User userToUpdate) {
+        userService.updateUser(userToUpdate);
+    }
+    @GetMapping("/users/{id}")
+    public void findUser(@PathVariable int id) {
+        userService.findUser(id);
+    }
+
+
+    @PutMapping("users/{id}/friends/{friendId}")
     public void addFriend(@PathVariable("id") int userId, @PathVariable("friendId") int friendId) {
         userService.addFriend(userId, friendId);
         log.info("Пользователь c id {} добавил в друзья пользователя с id {}", userId, friendId);

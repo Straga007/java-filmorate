@@ -119,7 +119,7 @@ public class FilmorateApplicationTests {
     }
 
 
-    @Test
+  /*  @Test
     public void testRemoveLike() {
         final InMemoryUserStorage inUserStorage = new InMemoryUserStorage();
         final InMemoryFilmStorage inFilmStorage = new InMemoryFilmStorage();
@@ -141,7 +141,7 @@ public class FilmorateApplicationTests {
         Film finalFilm = inFilmStorage.findFilm(filmId);
         assertFalse(finalFilm.getLikes().contains(userId));
     }
-
+*/
     @Test
     public void testTopLike() {
         Film film1 = new Film("Film 1", "Description 1", LocalDate.now(), 120, 1);

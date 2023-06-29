@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -17,6 +19,14 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
+    public void createUser(User user) {
+        userStorage.createUser(user);
+    }
+
+    public void deleteUser(int id) {
+        userStorage.deleteUser(id);
+    }
+
     public void addFriend(int userId, int friendId) {
         User user = userStorage.findUser(userId);
         User friend = userStorage.findUser(friendId);
@@ -28,6 +38,19 @@ public class UserService {
         user.setFriend(friendId);
         friend.setFriend(userId);
     }
+
+    public void findAll() {
+        userStorage.findAll();
+    }
+
+    public void updateUser(User userToUpdate) {
+        userStorage.updateUser(userToUpdate);
+    }
+
+    public void findUser(int id) {
+        userStorage.findUser(id);
+    }
+
 
     public List<User> getAllFriend(int userId) {
         try {
@@ -52,7 +75,6 @@ public class UserService {
     }
 
     public Collection<User> getCommonFriends(int userId, int friendId) {
-
         return userStorage.findCommonFriends(userId, friendId);
     }
 }

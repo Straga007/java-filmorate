@@ -11,13 +11,11 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.time.LocalDate;
 import java.util.*;
 
-@RestController
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
     private static int nextId = 0;
 
-    @Override
     public Collection<User> findCommonFriends(int id, int otherId) {
         User user = users.get(id);
         User otherUser = users.get(otherId);
@@ -37,23 +35,17 @@ public class InMemoryUserStorage implements UserStorage {
         return commonFriends;
     }
 
-    @Override
-    @GetMapping("/users")
     public List<User> findAll() {
         return new ArrayList<>(users.values());
     }
 
-    @Override
-    @DeleteMapping("/users/{id}")
-    public void deleteUser(@PathVariable int id) {
+    public void deleteUser(int id) {
         if (users.remove(id) == null) {
             throw new NotFoundException("User with id " + id + " not found");
         }
     }
 
-    @Override
-    @PostMapping("/users")
-    public User createUser(@RequestBody User user) {
+    public User createUser(User user) {
         validate(user);
         int id = ++nextId;
         User newUser = new User(user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), id);
@@ -61,9 +53,7 @@ public class InMemoryUserStorage implements UserStorage {
         return newUser;
     }
 
-    @Override
-    @PutMapping("/users")
-    public User updateUser(@RequestBody User userToUpdate) {
+    public User updateUser(User userToUpdate) {
         User existingUser = users.get(userToUpdate.getId());
         if (existingUser == null) {
             throw new InternalServerException("User with id " + userToUpdate.getId() + " not found");
@@ -75,13 +65,10 @@ public class InMemoryUserStorage implements UserStorage {
         existingUser.setLogin(userToUpdate.getLogin());
         existingUser.setName(userToUpdate.getName());
 
-
         return existingUser;
     }
 
-    @Override
-    @GetMapping("/users/{id}")
-    public User findUser(@PathVariable int id) {
+    public User findUser(int id) {
         if (users.get(id) != null) {
             return users.get(id);
         } else {

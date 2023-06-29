@@ -8,19 +8,18 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.*;
 
 
-@RestController
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
+
     private final Map<Integer, Film> films = new HashMap<>();
     private Integer nextId = 0;
     final LocalDate invalidReleaseDate = LocalDate.of(1895, 12, 28);
 
-    @Override
+
     public Collection<Film> findPopularFilms(Integer count) {
         List<Film> allFilms = new ArrayList<>(films.values());
         allFilms.sort((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()));
@@ -29,30 +28,23 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
 
-    @Override
-    @GetMapping("/films")
     public List<Film> findAll() {
         return new ArrayList<>(films.values());
     }
 
-    @Override
-    @PostMapping(value = "/films")
-    public Film createFilm(@RequestBody @Valid Film film) {
-        validate(film);
+    public Film createFilm(Film film) {
         int id = ++nextId;
         film.setId(id);
         films.put(film.getId(), film);
         return film;
     }
 
-    @Override
-    @PutMapping("/films")
-    public Film updateFilm(@RequestBody @Valid Film filmToUpdate) {
+    public Film updateFilm(Film filmToUpdate) {
         Film existingFilm = films.get(filmToUpdate.getId());
         if (existingFilm == null) {
             throw new InternalServerException("Film with id " + filmToUpdate.getId() + " not found");
         }
-        validate(filmToUpdate);
+
         existingFilm.setName(filmToUpdate.getName());
         existingFilm.setDescription(filmToUpdate.getDescription());
         existingFilm.setReleaseDate(filmToUpdate.getReleaseDate());
@@ -60,18 +52,13 @@ public class InMemoryFilmStorage implements FilmStorage {
         return existingFilm;
     }
 
-    @Override
-    @DeleteMapping("/films/{id}")
-    public void deleteFilm(@PathVariable int id) {
+    public void deleteFilm(int id) {
         if (films.remove(id) == null) {
             throw new NotFoundException("Film with id " + id + " not found");
         }
     }
 
-
-    @Override
-    @GetMapping("/films/{id}")
-    public Film findFilm(@PathVariable int id) {
+    public Film findFilm(int id) {
         if (films.get(id) != null) {
             return films.get(id);
         } else {
