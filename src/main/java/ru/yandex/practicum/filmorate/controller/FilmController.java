@@ -1,82 +1,75 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.InternalServerException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
+import javax.validation.Valid;
 import java.util.*;
 
 @RestController
 @Slf4j
 public class FilmController {
-    private final Map<Integer, Film> films = new HashMap<>();
-    private static final LocalDate invalidReleaseDate = LocalDate.of(1895, 12, 28);
-    private static int nextId = 0;
+    private final FilmService filmService;
+
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @PostMapping(value = "/films")
-    public ResponseEntity<Film> createFilm(@RequestBody Film film) {
-        validate(film);
-        int id = ++nextId;
-        film.setId(id);
-        films.put(film.getId(), film);
-        return ResponseEntity.ok(film);
-
+    public Film createFilm(@RequestBody @Valid Film film) {
+        filmService.createFilm(film);
+        return film;
     }
-
 
     @PutMapping("/films")
-    public Film updateFilm(@RequestBody Film filmToUpdate) {
-        Film existingFilm = films.get(filmToUpdate.getId());
-        if (existingFilm == null) {
-            throw new InternalServerException("Film with id " + filmToUpdate.getId() + " not found");
-        }
-        validate(filmToUpdate);
-
-        existingFilm.setName(filmToUpdate.getName());
-        existingFilm.setDescription(filmToUpdate.getDescription());
-        existingFilm.setReleaseDate(filmToUpdate.getReleaseDate());
-        existingFilm.setDuration(filmToUpdate.getDuration());
-        return existingFilm;
+    public Film updateFilm(@RequestBody @Valid Film filmToUpdate) {
+        filmService.updateFilm(filmToUpdate);
+        return filmToUpdate;
     }
-
 
     @DeleteMapping("/films/{id}")
-    public ResponseEntity<Void> deleteFilm(@PathVariable int id) {
-        if (films.remove(id) != null) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    public void validate(Film film) {
-        String name = film.getName();
-        String description = film.getDescription();
-        LocalDate releaseDate = film.getReleaseDate();
-        long duration = film.getDuration();
-
-        if (name.isEmpty()) {
-            throw new ValidationException("name can not be empty");
-        }
-        if (description.length() > 200) {
-            throw new ValidationException("description length cannot be more than 200 characters");
-        }
-        if (releaseDate.isBefore(invalidReleaseDate)) {
-            throw new ValidationException("The release date should be after December 28, 1895");
-        }
-        if (duration <= 0) {
-            throw new ValidationException("The duration of the film should be positive");
-        }
+    public void deleteFilm(@PathVariable int id) {
+        filmService.deleteFilm(id);
     }
 
     @GetMapping("/films")
-    public List<Film> findAll() {
-        log.info("Текущее количество постов: {}", films.size());
-        return new ArrayList<>(films.values());
+    public Collection<Film> findAll() {
+        return filmService.findAll();
+    }
+
+    @GetMapping("/films/{id}")
+    public Film findFilm(@PathVariable int id) {
+        return filmService.findFilm(id);
+
+    }
+
+    @PutMapping("films/{id}/like/{userId}")
+    public void addLike(@PathVariable("id") int filmId, @PathVariable("userId") int userId) {
+        filmService.addLike(filmId, userId);
+        log.info("Пользователь c id {} поставил лайк фильму с id {}", userId, filmId);
+    }
+
+
+    @GetMapping("films/{id}/likes")
+    public int getAllLikes(@PathVariable int id) {
+        return filmService.getAllLikes(id);
+    }
+
+    @GetMapping("/films/popular")
+    public Collection<Film> getPopularFilms(
+            @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
+        log.info("Получен запрос на вывод {} популярных фильмов", count);
+        return filmService.getPopularFilms(count);
+    }
+
+    @DeleteMapping("films/{id}/like/{userId}")
+    public void deleteLike(@PathVariable("id") Integer filmId, @PathVariable("userId") Integer userId) {
+        filmService.deleteLike(filmId, userId);
+        log.info("Пользователь c id {} удалил лайка с фильма с id {}", userId, filmId);
     }
 
 }
