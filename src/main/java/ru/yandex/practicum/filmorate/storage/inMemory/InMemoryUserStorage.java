@@ -45,11 +45,12 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     public User createUser(User user) {
-        validate(user);
         int id = ++nextId;
-        User newUser = new User(user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), id);
-        users.put(newUser.getId(), newUser);
-        return newUser;
+        user.setId(id); //
+        users.put(user.getId(), user);
+        return user;
+
+
     }
 
     public User updateUser(User userToUpdate) {

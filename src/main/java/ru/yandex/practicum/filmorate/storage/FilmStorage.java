@@ -11,7 +11,7 @@ public interface FilmStorage {
 
     Collection<Film> findAll();
 
-    Film createFilm(@RequestBody @Valid Film film);
+    Film createFilm(@RequestBody Film film);
 
     Film updateFilm(Film film);
 

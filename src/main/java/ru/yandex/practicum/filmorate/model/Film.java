@@ -26,7 +26,7 @@ public class Film {
     private long duration;
     public Set<Integer> likes;
 
-    public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration, int id) {
+    public Film(@NonNull @NotEmpty String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration, int id) {
         this.id = id;
         this.name = name;
         this.description = description;

@@ -6,8 +6,13 @@ import java.util.Set;
 
 import lombok.Data;
 import lombok.NonNull;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Data
+@NonNull
+@ToString
 public class User {
 
     private int id;
