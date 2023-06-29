@@ -45,8 +45,9 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     public User createUser(User user) {
+        validate(user);
         int id = ++nextId;
-        user.setId(id); //
+        user.setId(id);
         users.put(user.getId(), user);
         return user;
 

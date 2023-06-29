@@ -32,6 +32,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public Film createFilm(Film film) {
+        validate(film);
         int id = ++nextId;
         film.setId(id);
         films.put(film.getId(), film);
