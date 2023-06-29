@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.inMemory;
 
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
