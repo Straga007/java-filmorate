@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.util.*;
 
 @RestController
@@ -16,6 +17,34 @@ public class FilmController {
     @Autowired
     public FilmController(FilmService filmService) {
         this.filmService = filmService;
+    }
+
+    @PostMapping(value = "/films")
+    public Film createFilm(@RequestBody @Valid Film film) {
+        filmService.createFilm(film);
+        return film;
+    }
+
+    @PutMapping("/films")
+    public Film updateFilm(@RequestBody @Valid Film filmToUpdate) {
+        filmService.updateFilm(filmToUpdate);
+        return filmToUpdate;
+    }
+
+    @DeleteMapping("/films/{id}")
+    public void deleteFilm(@PathVariable int id) {
+        filmService.deleteFilm(id);
+    }
+
+    @GetMapping("/films")
+    public Collection<Film> findAll() {
+        return filmService.findAll();
+    }
+
+    @GetMapping("/films/{id}")
+    public Film findFilm(@PathVariable int id) {
+        return filmService.findFilm(id);
+
     }
 
     @PutMapping("films/{id}/like/{userId}")
