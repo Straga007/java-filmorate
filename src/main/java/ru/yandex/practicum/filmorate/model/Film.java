@@ -30,7 +30,7 @@ public class Film {
     private Set<String> genres;
     @Pattern(regexp = "^(G|PG|PG-13|R|NC-17)$", message = "Invalid MPA value. Allowed values: G, PG, PG-13, R, NC-17")
     @NotBlank(message = "MPA can not be blank")
-    private String MPA;
+    private String mpa;
 
 
     public Film(@NonNull @NotEmpty String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration, int id, @NonNull String genres, @NonNull String MPA) {
@@ -42,7 +42,7 @@ public class Film {
         this.likes = new HashSet<>();
         this.genres = new HashSet<>();
         this.genres.add(genres);
-        this.MPA = MPA;
+        this.mpa = MPA;
     }
 
 
