@@ -28,7 +28,7 @@ public class UserController {
     @DeleteMapping("/users/{id}")
     public void deleteUser(@PathVariable int id) {
         userService.deleteUser(id);
-        log.info("Пользователь c id {} был удален", id);
+        log.info("Пользователь с id {} был удален", id);
     }
 
     @GetMapping("/users")
@@ -47,14 +47,19 @@ public class UserController {
         return userService.findUser(id);
     }
 
-
-    @PutMapping("users/{id}/friends/{friendId}")
+    @PutMapping("/users/{id}/friends/{friendId}")
     public void addFriend(@PathVariable("id") int userId, @PathVariable("friendId") int friendId) {
         userService.addFriend(userId, friendId);
-        log.info("Пользователь c id {} добавил в друзья пользователя с id {}", userId, friendId);
+        log.info("Пользователь с id {} добавил в друзья пользователя с id {}", userId, friendId);
     }
 
-    @GetMapping("users/{id}/friends")
+    @PutMapping("/users/{id}/friends/confirm/{friendId}")
+    public void confirmFriendship(@PathVariable("id") int userId, @PathVariable("friendId") int friendId) {
+        userService.confirmFriendship(userId, friendId);
+        log.info("Пользователь с id {} подтвердил дружбу с пользователем с id {}", userId, friendId);
+    }
+
+    @GetMapping("/users/{id}/friends")
     public List<User> getAllFriend(@PathVariable int id) {
         return userService.getAllFriend(id);
     }
@@ -62,12 +67,12 @@ public class UserController {
     @DeleteMapping("/users/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable("id") int userId, @PathVariable("friendId") int friendId) {
         userService.delFriend(userId, friendId);
-        log.info("Пользователь c id {} удалил из друзей пользователя с id {}", userId, friendId);
+        log.info("Пользователь с id {} удалил из друзей пользователя с id {}", userId, friendId);
     }
 
     @GetMapping("/users/{id}/friends/common/{otherId}")
     public Collection<User> commonFriends(@PathVariable("id") int id, @PathVariable("otherId") int otherId) {
-        log.info("Пользователь c id {} ищет общих друзей у пользователя с id {}", id, otherId);
+        log.info("Пользователь с id {} ищет общих друзей у пользователя с id {}", id, otherId);
         return userService.getCommonFriends(id, otherId);
     }
 }

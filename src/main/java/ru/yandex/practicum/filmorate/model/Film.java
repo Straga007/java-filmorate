@@ -25,15 +25,26 @@ public class Film {
     @Positive(message = "the duration of the film should be positive")
     private long duration;
     public Set<Integer> likes;
+    @NotEmpty(message = "genres can not be empty")
+    @Size(min = 1, message = "at least one genre should be specified")
+    private Set<String> genres;
+    @Pattern(regexp = "^(G|PG|PG-13|R|NC-17)$", message = "Invalid MPA value. Allowed values: G, PG, PG-13, R, NC-17")
+    @NotBlank(message = "MPA can not be blank")
+    private String MPA;
 
-    public Film(@NonNull @NotEmpty String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration, int id) {
+
+    public Film(@NonNull @NotEmpty String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration, int id, @NonNull String genres, @NonNull String MPA) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.likes = new HashSet<>();
+        this.genres = new HashSet<>();
+        this.genres.add(genres);
+        this.MPA = MPA;
     }
+
 
     public void setLikesIncrease(int id) {
         likes.add(id);
