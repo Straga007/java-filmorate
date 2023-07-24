@@ -33,7 +33,7 @@ public class Film {
     private String mpa;
 
 
-    public Film(@NonNull @NotEmpty String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration, int id, @NonNull String genres, @NonNull String MPA) {
+    public Film(@NonNull @NotEmpty String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration, int id, @NonNull String genres, @NonNull String mpa) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -42,7 +42,7 @@ public class Film {
         this.likes = new HashSet<>();
         this.genres = new HashSet<>();
         this.genres.add(genres);
-        this.mpa = MPA;
+        this.mpa = mpa;
     }
 
 
