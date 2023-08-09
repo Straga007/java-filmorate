@@ -11,6 +11,7 @@ import java.util.*;
 
 @RestController
 @Slf4j
+@RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
 
@@ -19,54 +20,54 @@ public class FilmController {
         this.filmService = filmService;
     }
 
-    @PostMapping(value = "/films")
+    @PostMapping
     public Film createFilm(@RequestBody @Valid Film film) {
         filmService.createFilm(film);
         return film;
     }
 
-    @PutMapping("/films")
+    @PutMapping
     public Film updateFilm(@RequestBody @Valid Film filmToUpdate) {
         filmService.updateFilm(filmToUpdate);
         return filmToUpdate;
     }
 
-    @DeleteMapping("/films/{id}")
+    @DeleteMapping("/{id}")
     public void deleteFilm(@PathVariable int id) {
         filmService.deleteFilm(id);
     }
 
-    @GetMapping("/films")
+    @GetMapping
     public Collection<Film> findAll() {
         return filmService.findAll();
     }
 
-    @GetMapping("/films/{id}")
+    @GetMapping("/{id}")
     public Film findFilm(@PathVariable int id) {
         return filmService.findFilm(id);
 
     }
 
-    @PutMapping("films/{id}/like/{userId}")
+    @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable("id") int filmId, @PathVariable("userId") int userId) {
         filmService.addLike(filmId, userId);
         log.info("Пользователь c id {} поставил лайк фильму с id {}", userId, filmId);
     }
 
 
-    @GetMapping("films/{id}/likes")
+    @GetMapping("/{id}/likes")
     public int getAllLikes(@PathVariable int id) {
         return filmService.getAllLikes(id);
     }
 
-    @GetMapping("/films/popular")
+    @GetMapping("/popular")
     public Collection<Film> getPopularFilms(
             @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
         log.info("Получен запрос на вывод {} популярных фильмов", count);
         return filmService.getPopularFilms(count);
     }
 
-    @DeleteMapping("films/{id}/like/{userId}")
+    @DeleteMapping("{id}/like/{userId}")
     public void deleteLike(@PathVariable("id") Integer filmId, @PathVariable("userId") Integer userId) {
         filmService.deleteLike(filmId, userId);
         log.info("Пользователь c id {} удалил лайка с фильма с id {}", userId, filmId);

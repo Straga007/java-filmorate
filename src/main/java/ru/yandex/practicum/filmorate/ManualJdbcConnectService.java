@@ -1,3 +1,4 @@
+/*
 package ru.yandex.practicum.filmorate;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,8 +11,8 @@ import org.springframework.stereotype.Component;
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 public class ManualJdbcConnectService {
     public static final String JDBC_URL = "jdbc:mysql://cat.world:3306/allcats";
-    public static final String JDBC_USERNAME = "iamacat";
-    public static final String JDBC_PASSWORD = "iamapet";
+    public static final String JDBC_USERNAME = "sa";
+    public static final String JDBC_PASSWORD = "password";
     public static final String JDBC_DRIVER = "org.mysql.jdbc.Driver";
 
     public JdbcTemplate getTemplate() {
@@ -23,4 +24,4 @@ public class ManualJdbcConnectService {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         return jdbcTemplate;
     }
-}
+}*/

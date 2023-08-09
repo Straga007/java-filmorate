@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
 
 import java.util.Collection;
 
@@ -12,10 +13,12 @@ import java.util.Collection;
 public class FilmService {
     private final FilmStorage filmStorage;
 
+    private final LikeDao likesDao;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(FilmStorage filmStorage, LikeDao likesDao) {
         this.filmStorage = filmStorage;
+        this.likesDao = likesDao;
     }
 
     public void createFilm(Film film) {
@@ -58,4 +61,7 @@ public class FilmService {
         return filmStorage.findPopularFilms(count);
     }
 
+    public LikeDao getLikesDao() {
+        return likesDao;
+    }
 }
