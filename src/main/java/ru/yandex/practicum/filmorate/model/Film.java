@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,10 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.*;
 
-@Slf4j
 @Data
 @NonNull
-@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class Film {
 
     private int id;
@@ -23,17 +26,17 @@ public class Film {
     @PastOrPresent(message = "the release date should be after December 28, 1895")
     private LocalDate releaseDate;
     @Positive(message = "the duration of the film should be positive")
-    private long duration;
+    private int duration;
     public Set<Integer> likes;
     @NotEmpty(message = "genres can not be empty")
     @Size(min = 1, message = "at least one genre should be specified")
-    private Set<String> genres;
+    private Collection<Genre> genres;
     @Pattern(regexp = "^(G|PG|PG-13|R|NC-17)$", message = "Invalid MPA value. Allowed values: G, PG, PG-13, R, NC-17")
     @NotBlank(message = "MPA can not be blank")
-    private String mpa;
+    private Mpa mpa;
 
 
-    public Film(@NonNull @NotEmpty String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration, int id, @NonNull String genres, @NonNull String mpa) {
+    public Film(@NonNull @NotEmpty String name, @NonNull String description, @NonNull LocalDate releaseDate, int duration, int id) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -41,9 +44,9 @@ public class Film {
         this.duration = duration;
         this.likes = new HashSet<>();
         this.genres = new HashSet<>();
-        this.genres.add(genres);
-        this.mpa = mpa;
     }
+
+
 
 
     public void setLikesIncrease(int id) {
