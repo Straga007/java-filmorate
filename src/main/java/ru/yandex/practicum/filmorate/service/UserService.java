@@ -54,7 +54,7 @@ public class UserService {
         friendListDao.deleteFriend(userId, friendId);
     }
 
-    public Collection<User> getCommonFriends(int userId, int friendId) {
+    public List<User> getCommonFriends(int userId, int friendId) {
         return friendListDao.getCommonFriends(userId, friendId);
     }
 }
