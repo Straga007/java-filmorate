@@ -37,6 +37,8 @@ public class User {
         this.pendingFriends = new HashSet<>();
     }
 
+
+
     public void setFriend(int id, FriendshipStatus status) {
         friends.put(id, status);
     }

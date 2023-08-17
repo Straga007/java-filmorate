@@ -52,12 +52,6 @@ public class UserController {
         log.info("Пользователь с id {} добавил в друзья пользователя с id {}", userId, friendId);
     }
 
-    @PutMapping("/users/{id}/friends/confirm/{friendId}")
-    public void confirmFriendship(@PathVariable("id") int userId, @PathVariable("friendId") int friendId) {
-        userService.confirmFriendship(userId, friendId);
-        log.info("Пользователь с id {} подтвердил дружбу с пользователем с id {}", userId, friendId);
-    }
-
     @GetMapping("/users/{id}/friends")
     public List<User> getAllFriend(@PathVariable int id) {
         return userService.getAllFriend(id);

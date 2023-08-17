@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
 
 import java.sql.*;
@@ -213,7 +213,7 @@ public class FilmDb implements FilmStorage {
 
     private boolean checkFilmId(int id) {
         String sql = "SELECT EXISTS(SELECT 1 FROM films WHERE film_id = ?)";
-        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 }
 

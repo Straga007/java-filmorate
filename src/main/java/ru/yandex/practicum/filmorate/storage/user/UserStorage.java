@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,5 +18,4 @@ public interface UserStorage {
 
     User findUser(@PathVariable int id);
 
-    Collection<User> findCommonFriends(int id, int otherId);
 }

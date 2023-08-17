@@ -2,20 +2,21 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.status.FriendshipStatus;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.dao.FriendListDao;
 
 import java.util.*;
 
 @Service
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendListDao friendListDao;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorage userStorage, FriendListDao friendListDao) {
         this.userStorage = userStorage;
+        this.friendListDao = friendListDao;
     }
 
     public void createUser(User user) {
@@ -27,35 +28,9 @@ public class UserService {
     }
 
     public void addFriend(int userId, int friendId) {
-        User user = userStorage.findUser(userId);
-        User friend = userStorage.findUser(friendId);
 
-        if (user == null || friend == null) {
-            throw new NotFoundException("User not found");
-        }
-
-        user.addPendingFriend(friendId);
-        userStorage.updateUser(user);
+        friendListDao.addFriend(userId, friendId);
     }
-
-    public void confirmFriendship(int userId, int friendId) {
-        User user = userStorage.findUser(userId);
-        User friend = userStorage.findUser(friendId);
-
-        if (user == null || friend == null) {
-            throw new NotFoundException("User not found");
-        }
-
-            user.setFriend(friendId, FriendshipStatus.CONFIRMED);
-            friend.setFriend(userId, FriendshipStatus.CONFIRMED);
-            user.removePendingFriend(friendId);
-            friend.removePendingFriend(userId);
-
-            userStorage.updateUser(user);
-            userStorage.updateUser(friend);
-
-    }
-
 
     public Collection<User> findAll() {
         return userStorage.findAll();
@@ -70,30 +45,16 @@ public class UserService {
     }
 
     public List<User> getAllFriend(int userId) {
-        try {
-            Set<Integer> friendIds = userStorage.findUser(userId).getFriends();
-            List<User> friends = new ArrayList<>();
-            for (int friendId : friendIds) {
-                User friend = userStorage.findUser(friendId);
-                if (friend != null) {
-                    friends.add(friend);
-                }
-            }
-            return friends;
-        } catch (NotFoundException e) {
-            return Collections.emptyList();
-        }
+
+        return friendListDao.getAll(userId);
     }
 
     public void delFriend(int userId, int friendId) {
-        userStorage.findUser(userId).delFriend(friendId);
-        userStorage.findUser(friendId).delFriend(userId);
 
-        userStorage.updateUser(userStorage.findUser(userId));
-        userStorage.updateUser(userStorage.findUser(friendId));
+        friendListDao.deleteFriend(userId, friendId);
     }
 
     public Collection<User> getCommonFriends(int userId, int friendId) {
-        return userStorage.findCommonFriends(userId, friendId);
+        return friendListDao.getCommonFriends(userId, friendId);
     }
 }
