@@ -1,13 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.*;
 
