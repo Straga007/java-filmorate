@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.user.dao;
 
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface FriendListDao {
@@ -11,6 +12,6 @@ public interface FriendListDao {
 
     List<User> getAll(Integer id);
 
-    List<User> getCommonFriends(Integer id, Integer otherId);
+    Collection<User> getCommonFriends(Integer id, Integer otherId);
 
 }

@@ -1,13 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.user.storageImpl;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -15,11 +12,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.Collection;
 
-@Component
-@Primary
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
@@ -36,26 +30,12 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void deleteUser(int id) {
-        String deleteQuery = "DELETE FROM users WHERE user_id = ?";
-        jdbcTemplate.update(deleteQuery, id);
+
     }
 
 
     @Override
     public User createUser(User user) {
-        if (!isEmailUnique(user.getEmail())) {
-            throw new ValidationException("Пользователь с таким email уже существует");
-        }
-        if (!isLoginUnique(user.getLogin())) {
-            throw new ValidationException("Пользователь с таким login уже существует");
-        }
-        LocalDate currentDate = LocalDate.now();
-        if (user.getBirthday().isAfter(currentDate)) {
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
-        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин не должен быть пустым и не должен содержать пробелы");
-        }
         checkUserName(user);
         String sqlQuery = "INSERT INTO users (user_name, user_email, user_login, user_birthday) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -73,9 +53,11 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        String sqlQuery = "UPDATE users SET user_name = ?, user_email = ?, user_login = ?, user_birthday = ?" + "WHERE user_id = ?";
+        String sqlQuery = "UPDATE users SET user_name = ?, user_email = ?, user_login = ?, user_birthday = ?" +
+                "WHERE user_id = ?";
         checkUserName(user);
-        int updatedUsers = jdbcTemplate.update(sqlQuery, user.getName(), user.getEmail(), user.getLogin(), user.getBirthday(), user.getId());
+        int updatedUsers = jdbcTemplate.update(sqlQuery, user.getName(), user.getEmail(), user.getLogin(),
+                user.getBirthday(), user.getId());
         if (updatedUsers == 0) {
             throw new NotFoundException("Пользователь с идентификатором " + user.getId() + " не найден");
         }
@@ -93,7 +75,12 @@ public class UserDbStorage implements UserStorage {
     }
 
     private User rowMapper(ResultSet resultSet, int i) throws SQLException {
-        return new User(resultSet.getString("user_email"), resultSet.getString("user_login"), resultSet.getString("user_name"), resultSet.getDate("user_birthday").toLocalDate(), resultSet.getInt("user_id"));
+        return new User(resultSet.getString("user_email"),
+                resultSet.getString("user_login"),
+                resultSet.getString("user_name"),
+                resultSet.getDate("user_birthday").toLocalDate(),
+                resultSet.getInt("user_id")
+        );
     }
 
     private void checkUserName(User user) {
@@ -101,17 +88,4 @@ public class UserDbStorage implements UserStorage {
             user.setName(user.getLogin());
         }
     }
-
-    private boolean isEmailUnique(String email) {
-        String sqlQuery = "SELECT COUNT(*) FROM users WHERE user_email = ?";
-        int count = jdbcTemplate.queryForObject(sqlQuery, Integer.class, email);
-        return count == 0;
-    }
-
-    private boolean isLoginUnique(String login) {
-        String sqlQuery = "SELECT COUNT(*) FROM users WHERE user_login = ?";
-        int count = jdbcTemplate.queryForObject(sqlQuery, Integer.class, login);
-        return count == 0;
-    }
-
 }

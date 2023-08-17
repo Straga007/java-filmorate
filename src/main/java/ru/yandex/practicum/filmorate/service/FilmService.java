@@ -2,9 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
 
 import java.util.Collection;
@@ -42,15 +41,12 @@ public class FilmService {
     }
 
     public void addLike(int filmId, Integer userId) {
-        filmStorage.findFilm(filmId).setLikesIncrease(userId);
+        likesDao.addLikeToFilm(filmId, userId);
     }
 
     public void deleteLike(int filmId, Integer userId) {
-        Film film = filmStorage.findFilm(filmId);
-        if (!film.hasLiked(userId)) {
-            throw new NotFoundException("User with id " + userId + " has not liked the film with id " + filmId);
-        }
-        film.setLikesDecrease(userId);
+
+        likesDao.deleteLikeFromFilm(filmId, userId);
     }
 
     public int getAllLikes(int filmId) {
@@ -61,7 +57,4 @@ public class FilmService {
         return filmStorage.findPopularFilms(count);
     }
 
-    public LikeDao getLikesDao() {
-        return likesDao;
-    }
 }
