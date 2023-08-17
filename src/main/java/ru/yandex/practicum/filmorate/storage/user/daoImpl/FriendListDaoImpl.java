@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.user.dao.FriendListDao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,14 +53,15 @@ public class FriendListDaoImpl implements FriendListDao {
     }
 
     @Override
-    public Collection<User> getCommonFriends(Integer userId, Integer otherId) {
-        String sql = "SELECT  u.* " +
-                "FROM friend_list AS fl " +
-                "JOIN users AS us ON fl.friend_id = us.user_id " +
-                "WHERE fl.user_id = ? AND fl.friend_id IN (" +
-                "SELECT friend_id FROM friend_list WHERE user_id = ?)";
+    public List<User> getCommonFriends(Integer userId, Integer otherId) {
 
-        return jdbcTemplate.query(sql, this::rowMapper, userId, otherId);
+            String sql = "SELECT  us.* " +
+                    "FROM friend_list AS fl " +
+                    "JOIN users AS us ON fl.friend_id = us.user_id " +
+                    "WHERE fl.user_id = ? AND fl.friend_id IN (" +
+                    "SELECT friend_id FROM friend_list WHERE user_id = ?)";
+            return jdbcTemplate.query(sql, this::rowMapper, userId, otherId);
+
     }
 
     private User rowMapper(ResultSet resultSet, int i) throws SQLException {

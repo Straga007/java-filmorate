@@ -45,10 +45,3 @@ VALUES
     (1, 2),
     (2, 1),
     (3, 3);
-
--- Вставка данных в таблицу списка друзей
-INSERT INTO friend_list (user_id, friend_id, confirmed)
-VALUES
-    (1, 2, true),
-    (1, 3, true),
-    (2, 3, true);
