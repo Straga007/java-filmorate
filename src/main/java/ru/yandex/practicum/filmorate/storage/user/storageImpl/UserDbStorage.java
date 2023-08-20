@@ -15,6 +15,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Collection;
 
 @Component
@@ -47,6 +48,13 @@ public class UserDbStorage implements UserStorage {
 
         if (!isLoginUnique(user.getLogin())) {
             throw new ValidationException("Пользователь с таким login уже существует");
+        }
+        LocalDate currentDate = LocalDate.now();
+        if (user.getBirthday().isAfter(currentDate)) {
+            throw new ValidationException("Дата рождения не может быть в будущем");
+        }
+        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
+            throw new ValidationException("Логин не должен быть пустым и не должен содержать пробелы");
         }
         checkUserName(user);
         String sqlQuery = "INSERT INTO users (user_name, user_email, user_login, user_birthday) VALUES (?, ?, ?, ?)";
@@ -105,4 +113,5 @@ public class UserDbStorage implements UserStorage {
         int count = jdbcTemplate.queryForObject(sqlQuery, Integer.class, login);
         return count == 0;
     }
+
 }
