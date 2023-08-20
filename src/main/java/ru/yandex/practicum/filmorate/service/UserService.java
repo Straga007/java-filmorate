@@ -21,6 +21,7 @@ public class UserService {
 
     public void createUser(User user) {
         userStorage.createUser(user);
+
     }
 
     public void deleteUser(int id) {
