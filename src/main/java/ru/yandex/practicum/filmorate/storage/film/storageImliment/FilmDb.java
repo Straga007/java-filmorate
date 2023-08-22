@@ -93,10 +93,10 @@ public class FilmDb implements FilmStorage {
         if (film.getDuration() < 0) {
             throw new ValidationException("duration mast be positive ");
         }
-        String sqlQuery = "INSERT INTO films (name, description, release_date, duration, mpa_id)"
-                + "values (?, ?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
+            String sqlQuery = "INSERT INTO films (name, description, release_date, duration, mpa_id)"
+                    + "values (?, ?, ?, ?, ?)";
+            KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"film_id"});
                 stmt.setString(1, film.getName());
@@ -107,7 +107,7 @@ public class FilmDb implements FilmStorage {
                 return stmt;
             }, keyHolder);
 
-            film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+            film.setId(keyHolder.getKey().intValue());
 
             if (film.getGenres() != null) {
                 addGenresToFilm(film);
