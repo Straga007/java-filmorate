@@ -70,11 +70,15 @@ public class FilmDb implements FilmStorage {
 
         final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, identity()));
 
-        final String sqlQuery = "SELECT user_id FROM films_likes WHERE user_id IN(" + inSql + ")";
+        final String sqlQuery = "SELECT film_id, user_id FROM films_likes WHERE film_id IN(" + inSql + ")";
 
         jdbcTemplate.query(sqlQuery, (rs) -> {
-            final Film film = filmById.get(rs.getInt("film_id"));
-            film.getGenres().add(makeGenre(rs, films.size()));
+            final int filmId = rs.getInt("film_id");
+            final int userId = rs.getInt("user_id");
+            final Film film = filmById.get(filmId);
+            if (film != null) {
+                film.getLikes().add(userId);
+            }
         }, films.stream().map(Film::getId).toArray());
     }
 
