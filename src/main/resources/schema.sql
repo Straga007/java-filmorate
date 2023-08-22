@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS mpa_ratings (
 
 -- Создание таблицы фильмов
 CREATE TABLE IF NOT EXISTS films (
-    film_id SERIAL PRIMARY KEY,
+    film_id integer not null primary key auto_increment,
     name CHARACTER VARYING NOT NULL,
     description CHARACTER VARYING(200),
     release_date DATE,
