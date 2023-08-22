@@ -36,7 +36,7 @@ public class FilmDb implements FilmStorage {
     }
 
     @Override
-    public List<Film> findAll() {
+    public Collection<Film> findAll() {
         String sqlQuery = "SELECT f.*, " +
                 "m.rating as mpa_name, " +
                 "m.description as mpa_description, " +
@@ -89,7 +89,7 @@ public class FilmDb implements FilmStorage {
             throw new ValidationException("name cod not be blank or empty");
         }
         if (film.getDuration() < 0) {
-            throw new ValidationException("duration mast be positive");
+            throw new ValidationException("duration mast be positive ");
         }
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
