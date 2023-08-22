@@ -84,8 +84,6 @@ public class FilmDb implements FilmStorage {
 
     @Override
     public Film createFilm(Film film) {
-        String sqlQuery = "INSERT INTO films (name, description, release_date, duration, mpa_id)"
-                + "values (?, ?, ?, ?, ?)";
         if (film.getReleaseDate().isBefore(latestReleaseDate)) {
             throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года.");
         }
@@ -95,22 +93,30 @@ public class FilmDb implements FilmStorage {
         if (film.getDuration() < 0) {
             throw new ValidationException("duration mast be positive ");
         }
+        String sqlQuery = "INSERT INTO films (name, description, release_date, duration, mpa_id)"
+                + "values (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"film_id"});
-            stmt.setString(1, film.getName());
-            stmt.setString(2, film.getDescription());
-            stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
-            stmt.setInt(4, film.getDuration());
-            stmt.setInt(5, film.getMpa().getId());
-            return stmt;
-        }, keyHolder);
-        film.setId(keyHolder.getKey().intValue());
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"film_id"});
+                stmt.setString(1, film.getName());
+                stmt.setString(2, film.getDescription());
+                stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
+                stmt.setInt(4, film.getDuration());
+                stmt.setInt(5, film.getMpa().getId());
+                return stmt;
+            }, keyHolder);
 
-        if (film.getGenres() != null) {
-            addGenresToFilm(film);
+            film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+
+            if (film.getGenres() != null) {
+                addGenresToFilm(film);
+            }
+
+            return film;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create film: " + e.getMessage(), e);
         }
-        return film;
     }
 
     @Override
