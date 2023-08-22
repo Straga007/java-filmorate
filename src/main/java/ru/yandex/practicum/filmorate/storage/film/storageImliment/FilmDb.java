@@ -85,10 +85,10 @@ public class FilmDb implements FilmStorage {
         if (film.getReleaseDate().isBefore(latestReleaseDate)) {
             throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года.");
         }
-        if(film.getName().isEmpty() && film.getName().isBlank()){
+        if (film.getName().isEmpty() && film.getName().isBlank()) {
             throw new ValidationException("name cod not be blank or empty");
         }
-        if(film.getDuration() < 0 ){
+        if (film.getDuration() < 0) {
             throw new ValidationException("duration mast be positive");
         }
         KeyHolder keyHolder = new GeneratedKeyHolder();
