@@ -93,7 +93,7 @@ public class FilmDb implements FilmStorage {
         if (film.getDuration() < 0) {
             throw new ValidationException("duration mast be positive ");
         }
-        if (film.getDuration() > 200) {
+        if (film.getDescription().length() > 200) {
             throw new ValidationException("duration must be less then 200");
         }
         try {
