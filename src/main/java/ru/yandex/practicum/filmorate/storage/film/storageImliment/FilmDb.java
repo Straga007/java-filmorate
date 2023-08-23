@@ -93,6 +93,9 @@ public class FilmDb implements FilmStorage {
         if (film.getDuration() < 0) {
             throw new ValidationException("duration mast be positive ");
         }
+        if (film.getDuration() >200){
+            throw new ValidationException("duration must be less then 200");
+        }
         try {
             String sqlQuery = "INSERT INTO films (name, description, release_date, duration, mpa_id)"
                     + "values (?, ?, ?, ?, ?)";
@@ -214,10 +217,10 @@ public class FilmDb implements FilmStorage {
                 resultSet.getDate("release_date").toLocalDate(),
                 resultSet.getInt("duration"),
                 new HashSet<Integer>(),
-                new ArrayList<Genre>(), // для лайков
+                new ArrayList<Genre>(),
                 new Mpa(resultSet.getInt("mpa_id"),
                         resultSet.getString("mpa_name"),
-                        resultSet.getString("mpa_description"))  // для жанров
+                        resultSet.getString("mpa_description"))
         );
 
     }
