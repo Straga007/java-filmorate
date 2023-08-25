@@ -30,6 +30,7 @@ public class FilmController {
     public Film updateFilm(@RequestBody @Valid Film filmToUpdate) {
         filmService.updateFilm(filmToUpdate);
         return filmToUpdate;
+
     }
 
     @DeleteMapping("/{id}")

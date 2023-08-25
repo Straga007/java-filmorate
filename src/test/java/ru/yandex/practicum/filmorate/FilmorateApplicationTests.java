@@ -1,200 +1,220 @@
-/*
 
 package ru.yandex.practicum.filmorate;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
+
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.storage.inMemory.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.inMemory.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
+import ru.yandex.practicum.filmorate.storage.film.storageImliment.FilmDb;
+
+import ru.yandex.practicum.filmorate.storage.user.daoImpl.FriendListDaoImpl;
+import ru.yandex.practicum.filmorate.storage.user.storageImpl.UserDbStorage;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmorateApplicationTests {
-
+    private final UserDbStorage userStorage;
+    private final FriendListDaoImpl friendListDaoImpl;
+    @Mock
+    private LikeDao likeDao;
     @Mock
     private FilmStorage filmStorage;
-    @Mock
-    private UserStorage userStorage;
-    @InjectMocks
-    private UserService userService;
-    @InjectMocks
     private FilmService filmService;
-    Set<String> genres = new HashSet<>();
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        filmService = new FilmService(filmStorage, likeDao);
+    }
+
+    private Film initializeDataFilm() {
+        Mpa sampleMpa = new Mpa();
+        sampleMpa.setId(1);
+
+        Film sampleFilm = new Film();
+        sampleFilm.setId(1);
+        sampleFilm.setName("Test Film");
+        sampleFilm.setDescription("This is a test film");
+        sampleFilm.setReleaseDate(LocalDate.of(2023, 8, 24));
+        sampleFilm.setMpa(sampleMpa);
+
+        return sampleFilm;
+    }
+
+    private User initializeDataUser() {
+        User user = new User("test@test.com", "test", "Test User", LocalDate.of(1995, 12, 18), 1);
+        return userStorage.createUser(user);
+    }
 
     @Test
-    public void testAddLike() {
-        int filmId = 1;
-        int userId = 1;
-        String genres ="Комедия";
-        Film film = new Film("Film 1", "Description 1", LocalDate.now(), 120, filmId,"Комедия");
-        User user = new User("yooho@", "Jenry", "", LocalDate.now().minusDays(1), userId);
+    public void testCreateUser() {
+        User user = initializeDataUser();
+        assertThat(user.getId()).isNotNull();
+        assertThat(userStorage.findUser(user.getId())).isEqualTo(user);
+    }
 
-        when(filmStorage.findFilm(filmId)).thenReturn(film);
 
-        filmService.addLike(filmId, userId);
+    @Test
+    public void testCreateFilm() {
+        Mpa sampleMpa = new Mpa();
+        sampleMpa.setId(1);
 
-        assertTrue(film.getLikes().contains(userId));
+        Film sampleFilm = new Film();
+        sampleFilm.setId(1);
+        sampleFilm.setName("Test Film");
+        sampleFilm.setDescription("This is a test film");
+        sampleFilm.setReleaseDate(LocalDate.of(2023, 8, 24));
+        sampleFilm.setMpa(sampleMpa);
+
+        when(filmStorage.createFilm(any(Film.class))).thenReturn(sampleFilm);
+
+        Film createdFilm = filmStorage.createFilm(sampleFilm);
+
+        verify(filmStorage, times(1)).createFilm(any(Film.class));
+        assert sampleFilm.getName().equals(createdFilm.getName());
+        assert sampleFilm.getDescription().equals(createdFilm.getDescription());
+    }
+
+    @Test
+    public void testFindAllFilms() {
+        testCreateFilm();
+        Collection<Film> films = filmService.findAll();
+        assertThat(films).isNotNull();
+    }
+
+    @Test
+    public void testGetCommonFriends() {
+        User friend1 = new User("friend1@test.com", "friend1", "Friend1", LocalDate.of(2000, 1, 1), 2);
+        User friend2 = new User("friend2@test.com", "friend2", "Friend2", LocalDate.of(2000, 7, 1), 3);
+        User friend3 = new User("friend3@test.com", "friend3", "Friend3", LocalDate.of(2000, 7, 1), 4);
+
+        userStorage.createUser(friend1);
+        userStorage.createUser(friend2);
+        userStorage.createUser(friend3);
+
+        friendListDaoImpl.addFriend(friend1.getId(), friend3.getId());
+        friendListDaoImpl.addFriend(friend2.getId(), friend3.getId());
+        Collection<User> commonFriends = friendListDaoImpl.getCommonFriends(friend1.getId(), friend2.getId());
+
+        assertThat(commonFriends)
+                .isNotNull()
+                .hasSize(1)
+                .containsExactly(friend3);
     }
 
     @Test
     public void testAddFriend() {
+        User friend1 = new User("friend12@test.com", "friend12", "Friend1", LocalDate.of(2000, 1, 1), 5);
+        User friend2 = new User("friend23@test.com", "friend23", "Friend2", LocalDate.of(2000, 7, 1), 6);
+        userStorage.createUser(friend1);
+        userStorage.createUser(friend2);
+
+        friendListDaoImpl.addFriend(friend1.getId(), friend2.getId());
+        Collection<User> friends = friendListDaoImpl.getAll(friend1.getId());
+
+        assertThat(friends)
+                .isNotNull()
+                .hasSize(1);
+    }
+
+    @Test
+    public void testAddFriendSameIdsThrowsValidationException() {
         int userId = 1;
-        int friendId = 2;
+        int friendId = 1;
+        assertThatThrownBy(() -> friendListDaoImpl.addFriend(userId, friendId))
+                .isInstanceOf(ValidationException.class)
+                .hasMessage("Id пользователей не должны совпадать!");
+    }
 
-        User user = new User("yooho@", "Jenry", "", LocalDate.now().minusDays(1), userId);
-        User friend = new User("friend@", "Friend", "", LocalDate.now().minusDays(1), friendId);
-
-        when(userStorage.findUser(userId)).thenReturn(user);
-        when(userStorage.findUser(friendId)).thenReturn(friend);
-
-        userService.addFriend(userId, friendId);
-
-        assertTrue(user.getFriends().contains(friendId));
-        assertTrue(friend.getFriends().contains(userId));
+    @Test
+    public void testAddFriendNonExistingIdsThrowsUserNotFoundException() {
+        int userId = 1;
+        int friendId = 999;
+        assertThatThrownBy(() -> friendListDaoImpl.addFriend(userId, friendId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Пользователь не найден");
     }
 
     @Test
     public void testDeleteFriend() {
-        int userId = 1;
-        int friendId = 2;
+        User friend1 = new User("friend13@test.com", "friend13", "Friend1", LocalDate.of(2000, 1, 1), 7);
+        User friend2 = new User("friend24@test.com", "friend24", "Friend2", LocalDate.of(2000, 7, 1), 8);
+        userStorage.createUser(friend1);
+        userStorage.createUser(friend2);
 
-        User user = new User("user1@example.com", "user1", "User 1", LocalDate.now().minusDays(1), userId);
-        User friend = new User("user2@example.com", "user2", "User 2", LocalDate.now().minusDays(1), friendId);
+        friendListDaoImpl.addFriend(friend1.getId(), friend2.getId());
+        friendListDaoImpl.deleteFriend(friend1.getId(), friend2.getId());
+        Collection<User> friends = friendListDaoImpl.getAll(friend1.getId());
 
-        user.setFriend(friendId);
-        friend.setFriend(userId);
-
-        when(userStorage.findUser(userId)).thenReturn(user);
-        when(userStorage.findUser(friendId)).thenReturn(friend);
-
-        userService.delFriend(userId, friendId);
-
-        assertFalse(user.getFriends().contains(friendId));
-        assertFalse(friend.getFriends().contains(userId));
+        assertThat(friends)
+                .isNotNull()
+                .hasSize(0);
     }
 
     @Test
-    public void testCommonFriends() {
-        int userId1 = 1;
-        User user1 = new User("user1@example.com", "user1", "User 1", LocalDate.now().minusDays(1), userId1);
-        user1.setFriend(2);
-
-        int userId3 = 3;
-        User user3 = new User("user3@example.com", "user3", "User 3", LocalDate.now().minusDays(1), userId3);
-        user3.setFriend(2);
-
-        int userId2 = 2;
-        User user2 = new User("user2@example.com", "user2", "User 2", LocalDate.now().minusDays(1), userId2);
-        user2.setFriend(1);
-        user2.setFriend(3);
-
-        when(userStorage.findUser(userId1)).thenReturn(user1);
-        when(userStorage.findUser(userId2)).thenReturn(user2);
-        when(userStorage.findUser(userId3)).thenReturn(user3);
+    public void testDeleteFriendNonExistingIdsThrowsValidationException() {
+        User friend1 = new User("friend15@test.com", "friend15", "Friend1", LocalDate.of(2000, 1, 1), 9);
+        userStorage.createUser(friend1);
 
 
-        Collection<User> commonFriends = userService.getCommonFriends(userId1, userId3);
-        Assertions.assertNotNull(commonFriends);
-    }
-
-
-    @Test
-    public void testRemoveLike() {
-        final InMemoryUserStorage inUserStorage = new InMemoryUserStorage();
-        final InMemoryFilmStorage inFilmStorage = new InMemoryFilmStorage();
-        int filmId = 1;
-        int userId = 1;
-
-        Film film = new Film("Film 1", "Description 1", LocalDate.now(), 120, filmId,"Комедия");
-        inFilmStorage.createFilm(film);
-        User user = new User("yooho@", "Jenry", "", LocalDate.now().minusDays(1), userId);
-        inUserStorage.createUser(user);
-
-        Film initialFilm = inFilmStorage.findFilm(filmId);
-        initialFilm.setLikesIncrease(userId);
-
-        Film updatedFilm = inFilmStorage.findFilm(filmId);
-        assertTrue(updatedFilm.getLikes().contains(userId));
-
-        inFilmStorage.findFilm(filmId).setLikesDecrease(userId);
-        Film finalFilm = inFilmStorage.findFilm(filmId);
-        assertFalse(finalFilm.getLikes().contains(userId));
+        assertThatThrownBy(() -> friendListDaoImpl.deleteFriend(friend1.getId(), 8))
+                .isInstanceOf(ValidationException.class)
+                .hasMessage("Введен некорректный id");
     }
 
     @Test
-    public void testTopLike() {
-        Film film1 = new Film("Film 1", "Description 1", LocalDate.now(), 120, 1,"Комедия");
-        Film film2 = new Film("Film 2", "Description 2", LocalDate.now(), 90, 2,"Комедия");
+    public void testUpdateFilm() {
+        Film sampleFilm = initializeDataFilm();
+        Film updatedFilm = new Film();
+        updatedFilm.setId(1);
+        updatedFilm.setName("Updated Film Name");
+        updatedFilm.setDescription("Updated film description");
+        updatedFilm.setReleaseDate(LocalDate.of(2022, 8, 25));
+        updatedFilm.setDuration(120);
 
-        when(filmStorage.findPopularFilms(anyInt())).thenReturn(Arrays.asList(film1, film2));
+        when(filmStorage.findFilm(anyInt())).thenReturn(sampleFilm);
+        when(filmStorage.updateFilm(any(Film.class))).thenReturn(updatedFilm);
 
-        Collection<Film> popularFilms = filmService.getPopularFilms(2);
+        Film result = filmService.updateFilm(sampleFilm);
 
-        verify(filmStorage).findPopularFilms(2);
-        assertEquals(2, popularFilms.size());
-        assertTrue(popularFilms.contains(film1));
-        assertTrue(popularFilms.contains(film2));
-    }
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isNotNull();
 
-    @Test
-    void testInvalidUser() {
-        final InMemoryUserStorage inUserStorage = new InMemoryUserStorage();
+        assertThat(updatedFilm).isNotNull();
 
 
-        Assertions.assertThrows(ValidationException.class, () -> {
-            inUserStorage.validate((new User("", " ", "   ", LocalDate.now().plusDays(1), 1)));
-        });
-    }
-
-    @Test
-    public void testValidUser() {
-        String email = "yooho@";
-        String login = "Jenry";
-        String name = "";
-        LocalDate dateOfBirth = LocalDate.now().minusDays(1);
-        User user = new User(email, login, name, dateOfBirth, 1);
-        Assertions.assertNotNull(user);
-
+        assertThat(result.getName()).isEqualTo("Updated Film Name");
+        assertThat(result.getDescription()).isEqualTo("Updated film description");
+        assertThat(result.getReleaseDate()).isEqualTo(LocalDate.of(2022, 8, 25));
+        assertThat(result.getDuration()).isEqualTo(120);
     }
 
 
-    @Test
-    public void testValidFilm() {
-
-        String name = "The Matrix";
-        String description = "A computer hacker learns from mysterious rebels about the true nature of his reality.";
-        LocalDate releaseDate = LocalDate.of(1999, 3, 31);
-        long duration = 136;
-
-        Film film = new Film(name, description, releaseDate, duration, 1,"Комедия");
-
-        Assertions.assertNotNull(film);
-    }
 }
 
-*/
+

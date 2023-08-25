@@ -29,8 +29,6 @@ public class Film {
     @NotEmpty(message = "genres can not be empty")
     @Size(min = 1, message = "at least one genre should be specified")
     private Collection<Genre> genres;
-    @Pattern(regexp = "^(G|PG|PG-13|R|NC-17)$", message = "Invalid MPA value. Allowed values: G, PG, PG-13, R, NC-17")
-    @NotBlank(message = "MPA can not be blank")
     private Mpa mpa;
 
 
@@ -43,8 +41,6 @@ public class Film {
         this.likes = new HashSet<>();
         this.genres = new HashSet<>();
     }
-
-
 
 
     public void setLikesIncrease(int id) {
