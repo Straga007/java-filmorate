@@ -24,8 +24,8 @@ public class FilmService {
         filmStorage.createFilm(film);
     }
 
-    public void updateFilm(Film filmToUpdate) {
-        filmStorage.updateFilm(filmToUpdate);
+    public Film updateFilm(Film filmToUpdate) {
+        return filmStorage.updateFilm(filmToUpdate);
     }
 
     public void deleteFilm(int filmToDelite) {
