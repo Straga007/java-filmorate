@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
 
 import java.sql.*;
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,7 @@ public class FilmDb implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final LikeDao likesDao;
-    
+
     public FilmDb(JdbcTemplate jdbcTemplate, LikeDao likesDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.likesDao = likesDao;
