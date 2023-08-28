@@ -6,26 +6,33 @@ import java.util.HashSet;
 import java.util.Set;
 
 import lombok.*;
-import ru.yandex.practicum.filmorate.validations.film.interfaces.ValidFilm;
 
+import javax.validation.constraints.*;
 
 @Data
+@NonNull
 @NoArgsConstructor
 @AllArgsConstructor
-@ValidFilm
+
 public class Film {
 
     private int id;
+    @NotEmpty(message = "name can not be empty")
     private String name;
+    @Size(max = 200, message = "description length cannot be more than 200 characters")
     private String description;
+    @PastOrPresent(message = "the release date should be after December 28, 1895")
     private LocalDate releaseDate;
+    @Positive(message = "the duration of the film should be positive")
     private int duration;
     public Set<Integer> likes;
+    @NotEmpty(message = "genres can not be empty")
+    @Size(min = 1, message = "at least one genre should be specified")
     private Collection<Genre> genres;
     private Mpa mpa;
 
 
-    public Film(String name, String description, LocalDate releaseDate, int duration, int id) {
+    public Film(@NonNull @NotEmpty String name, @NonNull String description, @NonNull LocalDate releaseDate, int duration, int id) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -34,5 +41,6 @@ public class Film {
         this.likes = new HashSet<>();
         this.genres = new HashSet<>();
     }
+
 
 }
