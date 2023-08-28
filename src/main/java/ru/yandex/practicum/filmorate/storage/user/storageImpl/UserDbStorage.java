@@ -36,7 +36,8 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void deleteUser(int id) {
-
+        String deleteQuery = "DELETE FROM users WHERE user_id = ?";
+        jdbcTemplate.update(deleteQuery, id);
     }
 
 
@@ -45,7 +46,6 @@ public class UserDbStorage implements UserStorage {
         if (!isEmailUnique(user.getEmail())) {
             throw new ValidationException("Пользователь с таким email уже существует");
         }
-
         if (!isLoginUnique(user.getLogin())) {
             throw new ValidationException("Пользователь с таким login уже существует");
         }
