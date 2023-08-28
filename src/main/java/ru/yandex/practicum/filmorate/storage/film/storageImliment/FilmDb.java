@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -14,6 +15,7 @@ import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
 
 import java.sql.*;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,7 @@ public class FilmDb implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final LikeDao likesDao;
 
+    final LocalDate latestReleaseDate = LocalDate.of(1895, 12, 28);
 
     public FilmDb(JdbcTemplate jdbcTemplate, LikeDao likesDao) {
         this.jdbcTemplate = jdbcTemplate;
@@ -93,7 +96,18 @@ public class FilmDb implements FilmStorage {
 
     @Override
     public Film createFilm(Film film) {
-
+        if (film.getReleaseDate().isBefore(latestReleaseDate)) {
+            throw new ValidationException("Дата релиза должна быть не раньше 28 декабря 1895 года.");
+        }
+        if (film.getName().isEmpty() && film.getName().isBlank()) {
+            throw new ValidationException("name cod not be blank or empty");
+        }
+        if (film.getDuration() < 0) {
+            throw new ValidationException("duration mast be positive ");
+        }
+        if (film.getDescription().length() > 200) {
+            throw new ValidationException("duration must be less then 200");
+        }
         try {
             String sqlQuery = "INSERT INTO films (name, description, release_date, duration, mpa_id)"
                     + "values (?, ?, ?, ?, ?)";
