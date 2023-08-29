@@ -1,9 +1,9 @@
 -- Создание таблицы пользователей
 CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
-    user_name CHARACTER VARYING(255),
-    user_email CHARACTER VARYING(255) NOT NULL UNIQUE,
-    user_login CHARACTER VARYING(255) NOT NULL UNIQUE,
+    user_name CHARACTER VARYING(100),
+    user_email CHARACTER VARYING(100) NOT NULL UNIQUE,
+    user_login CHARACTER VARYING(100) NOT NULL UNIQUE,
     user_birthday DATE
 );
 
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS mpa_ratings (
 -- Создание таблицы фильмов
 CREATE TABLE IF NOT EXISTS films (
     film_id integer not null primary key auto_increment,
-     name CHARACTER VARYING(255) NOT NULL,
+     name CHARACTER VARYING(100) NOT NULL,
     description CHARACTER VARYING(200),
     release_date DATE,
     duration INTEGER,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS films (
 -- Создание таблицы жанров
 CREATE TABLE IF NOT EXISTS genres (
     genre_id SERIAL PRIMARY KEY,
-    genre_name CHARACTER VARYING(255) NOT NULL
+    genre_name CHARACTER VARYING(100) NOT NULL
 );
 
 -- Создание связующей таблицы фильмов и жанров
