@@ -38,28 +38,4 @@ public class User {
     }
 
 
-
-    public void setFriend(int id, FriendshipStatus status) {
-        friends.put(id, status);
-    }
-
-    public void delFriend(int id) {
-        friends.remove(id);
-    }
-
-    public Set<Integer> getFriends() {
-        return friends.keySet();
-    }
-
-    public void addPendingFriend(int friendId) {
-        pendingFriends.add(friendId);
-    }
-
-    public void removePendingFriend(int friendId) {
-        pendingFriends.remove(friendId);
-    }
-
-    public Set<Integer> getPendingFriends() {
-        return pendingFriends;
-    }
 }
