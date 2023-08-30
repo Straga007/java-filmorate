@@ -12,6 +12,9 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.status.FriendshipStatus;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 @Slf4j
 @Data
 @NonNull
@@ -19,15 +22,19 @@ import ru.yandex.practicum.filmorate.model.status.FriendshipStatus;
 public class User {
 
     private int id;
+    @NotEmpty(message = "name can not be empty")
     private String email;
+    @NotEmpty(message = "login can not be empty")
+    @NotNull(message = "login cannot be null")
     private String login;
     private String name;
+    @NotNull(message = "Birthday cannot be null")
     private LocalDate birthday;
     public Map<Integer, FriendshipStatus> friends;
     private Set<Integer> pendingFriends;
 
 
-    public User(String email, @NonNull String login, String name, @NonNull LocalDate birthday, int id) {
+    public User(String email, String login, String name, LocalDate birthday, int id) {
         this.id = id;
         this.email = email;
         this.login = login;
