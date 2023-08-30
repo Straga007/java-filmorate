@@ -17,10 +17,13 @@ import javax.validation.constraints.*;
 public class Film {
 
     private int id;
+    @NotNull(message = "Name cannot be null")
     @NotEmpty(message = "name can not be empty")
     private String name;
+    @NotNull(message = "Description cannot be null")
     @Size(max = 200, message = "description length cannot be more than 200 characters")
     private String description;
+    @NotNull(message = "ReleaseDate cannot be null")
     @PastOrPresent(message = "the release date should be after December 28, 1895")
     private LocalDate releaseDate;
     @Positive(message = "the duration of the film should be positive")
@@ -32,7 +35,7 @@ public class Film {
     private Mpa mpa;
 
 
-    public Film(@NonNull @NotEmpty String name, @NonNull String description, @NonNull LocalDate releaseDate, int duration, int id) {
+    public Film(String name, String description, LocalDate releaseDate, int duration, int id) {
         this.id = id;
         this.name = name;
         this.description = description;
