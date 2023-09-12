@@ -13,7 +13,6 @@ import java.util.Collection;
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
-
     private final LikeDao likesDao;
 
     @Autowired
@@ -49,7 +48,6 @@ public class FilmService {
     }
 
     public void deleteLike(int filmId, Integer userId) {
-
         likesDao.deleteLikeFromFilm(filmId, userId);
     }
 
@@ -57,8 +55,13 @@ public class FilmService {
         return filmStorage.findFilm(filmId).getLikes().size();
     }
 
-    public Collection<Film> getPopularFilms(Integer count) {
-        return filmStorage.findPopularFilms(count);
+    public Collection<Film> getPopularFilms(Integer count, Integer genreId, Integer year) {
+        if (genreId == null && year == null) {
+            return filmStorage.findPopularFilms(count);
+        }
+        else {
+            return filmStorage.getTopPopularByGenreAndYear(count, genreId, year);
+        }
     }
 
     private void validation(Film film) {

@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.GenreDao;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
 
 import java.sql.*;
@@ -22,12 +23,10 @@ import static java.util.function.UnaryOperator.identity;
 @Component
 @Primary
 public class FilmDb implements FilmStorage {
-
     private final JdbcTemplate jdbcTemplate;
     private final LikeDao likesDao;
 
-
-    public FilmDb(JdbcTemplate jdbcTemplate, LikeDao likesDao) {
+    public FilmDb(JdbcTemplate jdbcTemplate, LikeDao likesDao, GenreDao genreDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.likesDao = likesDao;
     }
@@ -172,6 +171,23 @@ public class FilmDb implements FilmStorage {
                 "LIMIT ?";
 
         List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm, count);
+        getFilmGenres(films);
+        getFilmLikes(films);
+        return films;
+    }
+
+    @Override
+    public Collection<Film> getTopPopularByGenreAndYear(Integer count, Integer genreId, Integer year) {
+        String sqlQuery = "SELECT f.film_id, f.name, f.description, " +
+                "f.release_date, f.duration, COUNT(fl.user_id) AS like_count" +
+                "FROM films f" +
+                "JOIN films_genres fg ON f.film_id = fg.film_id" +
+                "LEFT JOIN films_likes fl ON f.film_id = fl.film_id" +
+                "WHERE YEAR(f.release_date) = ? AND g.genre_id = ?" +
+                "GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration" +
+                "ORDER BY like_count DESC" +
+                "LIMIT ?";
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm, year, genreId, count);
         getFilmGenres(films);
         getFilmLikes(films);
         return films;

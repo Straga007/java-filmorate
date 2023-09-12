@@ -30,7 +30,6 @@ public class FilmController {
     public Film updateFilm(@RequestBody @Valid Film filmToUpdate) {
         filmService.updateFilm(filmToUpdate);
         return filmToUpdate;
-
     }
 
     @DeleteMapping("/{id}")
@@ -46,7 +45,6 @@ public class FilmController {
     @GetMapping("/{id}")
     public Film findFilm(@PathVariable int id) {
         return filmService.findFilm(id);
-
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -55,7 +53,6 @@ public class FilmController {
         log.info("Пользователь c id {} поставил лайк фильму с id {}", userId, filmId);
     }
 
-
     @GetMapping("/{id}/likes")
     public int getAllLikes(@PathVariable int id) {
         return filmService.getAllLikes(id);
@@ -63,9 +60,12 @@ public class FilmController {
 
     @GetMapping("/popular")
     public Collection<Film> getPopularFilms(
-            @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
+            @RequestParam(value = "count", defaultValue = "10", required = false) Integer count,
+            @RequestParam(value = "genreId", required = false) Integer genreId,
+            @RequestParam(value = "year", required = false) Integer year) {
         log.info("Получен запрос на вывод {} популярных фильмов", count);
-        return filmService.getPopularFilms(count);
+        Collection<Film> popularFilms = filmService.getPopularFilms(count, genreId, year);
+        return popularFilms;
     }
 
     @DeleteMapping("{id}/like/{userId}")
@@ -73,5 +73,4 @@ public class FilmController {
         filmService.deleteLike(filmId, userId);
         log.info("Пользователь c id {} удалил лайка с фильма с id {}", userId, filmId);
     }
-
 }
