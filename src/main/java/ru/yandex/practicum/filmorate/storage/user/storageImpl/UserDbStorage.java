@@ -113,5 +113,4 @@ public class UserDbStorage implements UserStorage {
         int count = jdbcTemplate.queryForObject(sqlQuery, Integer.class, login);
         return count == 0;
     }
-
 }

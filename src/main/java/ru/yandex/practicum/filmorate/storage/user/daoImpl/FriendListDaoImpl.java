@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.feed.FeedSaveDao;
 import ru.yandex.practicum.filmorate.storage.user.dao.FriendListDao;
 
 import java.sql.ResultSet;
@@ -16,9 +17,11 @@ import java.util.Objects;
 public class FriendListDaoImpl implements FriendListDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final FeedSaveDao feedSaveDao;
 
-    public FriendListDaoImpl(JdbcTemplate jdbcTemplate) {
+    public FriendListDaoImpl(JdbcTemplate jdbcTemplate, FeedSaveDao feedSaveDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.feedSaveDao = feedSaveDao;
     }
 
     @Override
@@ -31,6 +34,7 @@ public class FriendListDaoImpl implements FriendListDao {
         String sqlQuery = "INSERT INTO friend_list(user_id, friend_id, confirmed)" +
                 "VALUES (?, ?, ?)";
         jdbcTemplate.update(sqlQuery, userId, friendId, true);
+        feedSaveDao.saveEvent(userId, 3, 2, friendId);
     }
 
     @Override
@@ -40,6 +44,7 @@ public class FriendListDaoImpl implements FriendListDao {
         }
         String sqlQuery = "DELETE FROM friend_list WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
+        feedSaveDao.saveEvent(userId, 3, 1, friendId);
     }
 
     @Override
