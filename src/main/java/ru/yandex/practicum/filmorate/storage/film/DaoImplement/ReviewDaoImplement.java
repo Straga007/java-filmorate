@@ -23,11 +23,10 @@ public class ReviewDaoImplement implements ReviewDao {
 
     @Override
     public Review saveReview(Review review) {
+        review.setUseful(0);
         String sql = "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) " +
                 "VALUES (?, ?, ?, ?, ?)";
-
         KeyHolder keyHolder = new GeneratedKeyHolder();
-
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"review_id"});
             ps.setString(1, review.getContent());
@@ -35,26 +34,35 @@ public class ReviewDaoImplement implements ReviewDao {
             ps.setInt(3, review.getUserId());
             ps.setInt(4, review.getFilmId());
             ps.setInt(5, review.getUseful());
-            //ps.setInt(6, review.getRating());
+
             return ps;
         }, keyHolder);
 
         long reviewId = Objects.requireNonNull(keyHolder.getKey()).longValue();
         review.setReviewId(reviewId);
-
         return review;
     }
 
     @Override
     public void addLikeToReview(int reviewId, int userId) {
+        String checkSql = "SELECT COUNT(*) FROM review_likes WHERE user_id = ? AND review_id = ?";
+        int likeCount = Objects.requireNonNull(jdbcTemplate.queryForObject(checkSql, Integer.class, userId, reviewId));
+        if (likeCount == 0) {
+            String insertSql = "INSERT INTO review_likes (user_id, review_id) VALUES (?, ?)";
+            jdbcTemplate.update(insertSql, userId, reviewId);
 
+            String updateSql = "UPDATE reviews SET useful = useful + 1 WHERE review_id = ?";
+            jdbcTemplate.update(updateSql, reviewId);
+        } else {
+            throw new IllegalStateException("Пользователь уже поставил лайк к данному отзыву.");
+        }
     }
 
 
     @Override
     public Review updateReview(Review review) {
         String sql = "UPDATE reviews SET content = ?, is_positive = ?, useful = ? WHERE review_id = ?";
-        jdbcTemplate.update(sql, review.getContent(), review.isPositive(), review.getUseful(), /*review.getRating(),*/ review.getReviewId());
+        jdbcTemplate.update(sql, review.getContent(), review.isPositive(), review.getUseful(), review.getReviewId());
         return review;
     }
 
@@ -103,7 +111,6 @@ public class ReviewDaoImplement implements ReviewDao {
         review.setUserId(resultSet.getInt("user_id"));// получаем от того кто оставил комент
         review.setFilmId(resultSet.getInt("film_id"));// получаем от того куда поставил комент
         review.setUseful(resultSet.getInt("useful"));// число лайков
-        //review.setRating(resultSet.getInt("rating"));// если лайк +1 если дизлайк -1, так 0
         return review;
     }
 }

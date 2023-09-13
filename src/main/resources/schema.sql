@@ -69,11 +69,15 @@ CREATE TABLE IF NOT EXISTS reviews (
     user_id INT NOT NULL,
     film_id INT NOT NULL,
     useful INT DEFAULT 0,
-    rating INT DEFAULT 0,
-
 
     CONSTRAINT user_id_fk_reviews FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     CONSTRAINT film_id_fk_reviews FOREIGN KEY (film_id) REFERENCES films(film_id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS review_likes (
+    like_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    review_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
