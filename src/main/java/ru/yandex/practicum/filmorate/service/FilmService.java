@@ -3,23 +3,28 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
 
     private final LikeDao likesDao;
+    private final DirectorDao directorDao;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, LikeDao likesDao) {
+    public FilmService(FilmStorage filmStorage, LikeDao likesDao, DirectorDao directorDao) {
         this.filmStorage = filmStorage;
         this.likesDao = likesDao;
+        this.directorDao = directorDao;
     }
 
     public void createFilm(Film film) {
@@ -75,6 +80,26 @@ public class FilmService {
         }
         if (film.getDescription().length() > 200) {
             throw new ValidationException("duration must be less then 200");
+        }
+    }
+
+    public Collection<Film> getSortFilmByDirector(Integer directorId, String sortBy) {
+        Director director = directorDao.getDirectorById(directorId);
+        if (sortBy.equals("year") || sortBy.equals("likes")) {
+            return filmStorage.findAll().stream()
+                    .filter(film -> {
+                        return film.getDirectors().contains(director);
+                    })
+                    .sorted((f1, f2) -> {
+                        if (sortBy.equals("year")) {
+                            return f1.getReleaseDate().compareTo(f2.getReleaseDate());
+                        } else {
+                            return f2.getLikes().size() - f1.getLikes().size();
+                        }
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            throw new ValidationException("Некорректный запрос на sort" + sortBy);
         }
     }
 }

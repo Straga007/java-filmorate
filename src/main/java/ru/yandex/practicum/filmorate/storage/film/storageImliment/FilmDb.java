@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -40,6 +41,9 @@ public class FilmDb implements FilmStorage {
         String deleteGenresQuery = "DELETE FROM films_genres WHERE film_id = ?";
         jdbcTemplate.update(deleteGenresQuery, id);
 
+        String deleteDirectorQuery = "DELETE FROM films_director WHERE film_id = ?";
+        jdbcTemplate.update(deleteDirectorQuery, id);
+
         String deleteFilmQuery = "DELETE FROM films WHERE film_id = ?";
         jdbcTemplate.update(deleteFilmQuery, id);
     }
@@ -55,6 +59,7 @@ public class FilmDb implements FilmStorage {
         List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm);
         getFilmGenres(films);
         getFilmLikes(films);
+        getFilmDirector(films);
         return films;
     }
 
@@ -91,6 +96,20 @@ public class FilmDb implements FilmStorage {
         }, films.stream().map(Film::getId).toArray());
     }
 
+    private void getFilmDirector(List<Film> films) {
+        String inSql = String.join(",", Collections.nCopies(films.size(), "?"));
+
+        final Map<Integer, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, identity()));
+        final String sqlQuery = "SELECT * FROM directors AS d " +
+                "INNER JOIN films_director AS fd ON d.director_id = fd.director_id " +
+                "WHERE fd.film_id IN (" + inSql + ")";
+        jdbcTemplate.query(sqlQuery, (rs) -> {
+            final Film film = filmById.get(rs.getInt("film_id"));
+            film.getDirectors().add(makeDirector(rs, filmById.size()));
+        }, films.stream().map(Film::getId).toArray());
+
+    }
+
     @Override
     public Film createFilm(Film film) {
 
@@ -109,9 +128,11 @@ public class FilmDb implements FilmStorage {
             }, keyHolder);
 
             film.setId(keyHolder.getKey().intValue());
-
             if (film.getGenres() != null) {
                 addGenresToFilm(film);
+            }
+            if (film.getDirectors() != null) {
+                addDirectorToFilm(film);
             }
 
             return film;
@@ -131,9 +152,17 @@ public class FilmDb implements FilmStorage {
                 film.getMpa().getId(), film.getId());
         if (film.getGenres() == null || film.getGenres().isEmpty()) {
             deleteGenresFromFilm(film);
+            film.setGenres(new LinkedHashSet<>());
         } else {
             film.setGenres(new LinkedHashSet<>(film.getGenres()));
             updateGenresOfFilm(film);
+        }
+        if (film.getDirectors() == null || film.getDirectors().isEmpty()) {
+            deleteDirectorFromFilm(film);
+            film.setDirectors(new LinkedHashSet<>());
+        } else {
+            film.setDirectors(new LinkedHashSet<>(film.getDirectors()));
+            updateDirectorOfFilm(film);
         }
         return film;
     }
@@ -154,6 +183,7 @@ public class FilmDb implements FilmStorage {
 
         Film film = jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, id);
         film.setGenres(getGenresOfFilm(id));
+        film.setDirectors(getDirectorOfFilm(id));
         film.setLikes(likesDao.getFilmLikes(id));
         return film;
     }
@@ -174,6 +204,7 @@ public class FilmDb implements FilmStorage {
         List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm, count);
         getFilmGenres(films);
         getFilmLikes(films);
+        getFilmDirector(films);
         return films;
     }
 
@@ -211,6 +242,7 @@ public class FilmDb implements FilmStorage {
                 resultSet.getInt("duration"),
                 new HashSet<Integer>(),
                 new ArrayList<Genre>(),
+                new ArrayList<Director>(),
                 new Mpa(resultSet.getInt("mpa_id"),
                         resultSet.getString("mpa_name"),
                         resultSet.getString("mpa_description"))
@@ -227,5 +259,35 @@ public class FilmDb implements FilmStorage {
         String sql = "SELECT EXISTS(SELECT 1 FROM films WHERE film_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
+
+    public void addDirectorToFilm(Film film) {
+        for (Director director : film.getDirectors()) {
+            String sqlQuery = "INSERT INTO films_director (film_id, director_id) VALUES (?,?)";
+            jdbcTemplate.update(sqlQuery, film.getId(), director.getId());
+        }
+    }
+
+    public void deleteDirectorFromFilm(Film film) {
+        String sqlQuery = "DELETE FROM films_director WHERE film_id = ?";
+        jdbcTemplate.update(sqlQuery, film.getId());
+    }
+
+    public void updateDirectorOfFilm(Film film) {
+        deleteDirectorFromFilm(film);
+        addDirectorToFilm(film);
+    }
+
+    private Director makeDirector(ResultSet rs, int RowNum) throws SQLException {
+        return new Director(rs.getInt("director_id"),
+                rs.getString("director_name"));
+    }
+
+    public Collection<Director> getDirectorOfFilm(int filmId) {
+        String sqlQuery = "SELECT * FROM directors " +
+                "INNER JOIN films_director AS fd ON directors.director_id = fd.director_id " +
+                "WHERE film_id = ?";
+        return jdbcTemplate.query(sqlQuery, this::makeDirector, filmId);
+    }
+
 }
 

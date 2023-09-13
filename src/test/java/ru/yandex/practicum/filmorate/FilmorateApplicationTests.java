@@ -19,6 +19,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
 
 import ru.yandex.practicum.filmorate.storage.user.daoImpl.FriendListDaoImpl;
@@ -44,11 +45,13 @@ public class FilmorateApplicationTests {
     @Mock
     private FilmStorage filmStorage;
     private FilmService filmService;
+    @Mock
+    private DirectorDao directorDao;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        filmService = new FilmService(filmStorage, likeDao);
+        filmService = new FilmService(filmStorage, likeDao,directorDao);
     }
 
     private Film initializeDataFilm() {
