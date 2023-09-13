@@ -75,3 +75,13 @@ CREATE TABLE IF NOT EXISTS reviews (
     CONSTRAINT user_id_fk_reviews FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     CONSTRAINT film_id_fk_reviews FOREIGN KEY (film_id) REFERENCES films(film_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS directors (
+    director_id INT NOT NULL primary key auto_increment ,
+    director_name CHARACTER VARYING(200)
+);
+
+CREATE TABLE IF NOT EXISTS films_director (
+    film_id INT REFERENCES films(film_id) ON DELETE CASCADE,
+    director_id INT REFERENCES directors(director_id) ON DELETE CASCADE
+);
