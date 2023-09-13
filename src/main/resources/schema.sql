@@ -87,6 +87,15 @@ CREATE TABLE IF NOT EXISTS review_dislikes (
     CONSTRAINT review_id_fk_reviews FOREIGN KEY (review_id) REFERENCES reviews(review_id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS directors (
+    director_id INT NOT NULL primary key auto_increment ,
+    director_name CHARACTER VARYING(200)
+);
+
+CREATE TABLE IF NOT EXISTS films_director (
+    film_id INT REFERENCES films(film_id) ON DELETE CASCADE,
+    director_id INT REFERENCES directors(director_id) ON DELETE CASCADE
+);
 
 -- Создание таблицы типов событий
 CREATE TABLE IF NOT EXISTS event_types (
