@@ -20,8 +20,21 @@ public class ReviewService {
     public Review addReview(Review review) {
         return reviewDao.saveReview(review);
     }
-    public void addLikeToReview(int reviewId,int userId){
-        reviewDao.addLikeToReview(reviewId,userId);
+
+    public void addLikeToReview(int reviewId, int userId) {
+        reviewDao.addLikeToReview(reviewId, userId);
+    }
+
+    public void addDislikeToReview(int reviewId, int userId) {
+        reviewDao.addDislikeToReview(reviewId, userId);
+    }
+
+    public void deleteLikeToReview(int reviewId, int userId) {
+        reviewDao.deleteLikeToReview(reviewId, userId);
+    }
+
+    public void deleteDislikeToReview(int reviewId, int userId) {
+        reviewDao.deleteDislikeToReview(reviewId, userId);
     }
 
     public Review editReview(Review review) {
@@ -31,7 +44,8 @@ public class ReviewService {
     public void deleteReview(int id) {
         reviewDao.deleteReview(id);
     }
-    public Review getReviewById(int id){
+
+    public Review getReviewById(int id) {
         return reviewDao.getReviewById(id);
     }
 
