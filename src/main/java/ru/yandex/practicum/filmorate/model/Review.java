@@ -14,5 +14,4 @@ public class Review {
     int userId;
     int filmId;
     int useful;
-    int rating;
 }
