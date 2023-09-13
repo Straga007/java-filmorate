@@ -7,6 +7,7 @@ import java.util.List;
 public interface ReviewDao {
 
     Review saveReview(Review review);
+    void addLikeToReview(int reviewId,int userId);
 
     Review updateReview(Review review);
 

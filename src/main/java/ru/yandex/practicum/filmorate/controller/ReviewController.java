@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
+import java.util.Collection;
+
 @RestController
 @Slf4j
 @RequestMapping("/reviews")
@@ -16,6 +18,11 @@ public class ReviewController {
     @Autowired
     public ReviewController(ReviewService reviewService) {
         this.reviewService = reviewService;
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLikeToReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId) {
+        reviewService.addLikeToReview(reviewId, userId);
     }
 
     @PostMapping
@@ -32,9 +39,18 @@ public class ReviewController {
     public void deleteReview(@PathVariable int id) {
         reviewService.deleteReview(id);
     }
+
     @GetMapping("/{id}")
-    public Review getReview(@PathVariable int id){
+    public Review getReview(@PathVariable int id) {
         return reviewService.getReviewById(id);
     }
+
+    @GetMapping
+    public Collection<Review> getReviewsByFilmAndCount(
+            @RequestParam(name = "filmId", required = false) Long filmId,
+            @RequestParam(name = "count", required = false, defaultValue = "10") Integer count) {
+        return reviewService.getReviewsByFilmId(filmId, count);
+    }
+
 
 }
