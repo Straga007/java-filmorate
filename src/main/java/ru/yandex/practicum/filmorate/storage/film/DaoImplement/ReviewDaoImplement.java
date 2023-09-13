@@ -58,6 +58,54 @@ public class ReviewDaoImplement implements ReviewDao {
         }
     }
 
+    @Override
+    public void deleteLikeToReview(int reviewId, int userId) {
+        String checkSql = "SELECT COUNT(*) FROM review_likes WHERE user_id = ? AND review_id = ?";
+        int likeCount = jdbcTemplate.queryForObject(checkSql, Integer.class, userId, reviewId);
+
+        if (likeCount > 0) {
+            String deleteSql = "DELETE FROM review_likes WHERE user_id = ? AND review_id = ?";
+            jdbcTemplate.update(deleteSql, userId, reviewId);
+
+            String updateSql = "UPDATE reviews SET useful = useful - 1 WHERE review_id = ?";
+            jdbcTemplate.update(updateSql, reviewId);
+        } else {
+            throw new IllegalStateException("У пользователя нет лайка к данному отзыву.");
+        }
+    }
+
+    @Override
+    public void addDislikeToReview(int reviewId, int userId) {
+        String checkSql = "SELECT COUNT(*) FROM review_dislikes WHERE user_id = ? AND review_id = ?";
+        int likeCount = Objects.requireNonNull(jdbcTemplate.queryForObject(checkSql, Integer.class, userId, reviewId));
+        if (likeCount == 0) {
+            String insertSql = "INSERT INTO review_dislikes (user_id, review_id) VALUES (?, ?)";
+            jdbcTemplate.update(insertSql, userId, reviewId);
+
+            String updateSql = "UPDATE reviews SET useful = useful - 1 WHERE review_id = ?";
+            jdbcTemplate.update(updateSql, reviewId);
+        } else {
+            throw new IllegalStateException("Пользователь уже поставил дизлайк к данному отзыву.");
+        }
+    }
+
+
+    @Override
+    public void deleteDislikeToReview(int reviewId, int userId) {
+        String checkSql = "SELECT COUNT(*) FROM review_dislikes WHERE user_id = ? AND review_id = ?";
+        int likeCount = jdbcTemplate.queryForObject(checkSql, Integer.class, userId, reviewId);
+
+        if (likeCount > 0) {
+            String deleteSql = "DELETE FROM review_dislikes WHERE user_id = ? AND review_id = ?";
+            jdbcTemplate.update(deleteSql, userId, reviewId);
+
+            String updateSql = "UPDATE reviews SET useful = useful + 1 WHERE review_id = ?";
+            jdbcTemplate.update(updateSql, reviewId);
+        } else {
+            throw new IllegalStateException("У пользователя нет дизлайка к данному отзыву.");
+        }
+    }
+
 
     @Override
     public Review updateReview(Review review) {

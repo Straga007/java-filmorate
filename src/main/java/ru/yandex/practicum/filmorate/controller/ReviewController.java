@@ -25,6 +25,21 @@ public class ReviewController {
         reviewService.addLikeToReview(reviewId, userId);
     }
 
+    @PutMapping("/{id}/dislike/{userId}")
+    public void addDislikeToReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId) {
+        reviewService.addDislikeToReview(reviewId, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void deleteLikeToReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId) {
+        reviewService.deleteLikeToReview(reviewId, userId);
+    }
+
+    @DeleteMapping("/{id}/dislike/{userId}")
+    public void deleteDislikeToReview(@PathVariable("id") int reviewId, @PathVariable("userId") int userId) {
+        reviewService.deleteDislikeToReview(reviewId, userId);
+    }
+
     @PostMapping
     public Review addReview(@RequestBody Review review) {
         return reviewService.addReview(review);

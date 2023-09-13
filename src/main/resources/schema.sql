@@ -79,6 +79,12 @@ CREATE TABLE IF NOT EXISTS review_likes (
     review_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS review_dislikes (
+    dislike_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    review_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 
 -- Создание таблицы типов событий
