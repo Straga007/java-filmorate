@@ -38,7 +38,7 @@ public class ReviewDaoImplement implements ReviewDao {
             return ps;
         }, keyHolder);
 
-        long reviewId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        int reviewId = Objects.requireNonNull(keyHolder.getKey()).intValue();
         review.setReviewId(reviewId);
         return review;
     }
@@ -53,6 +53,7 @@ public class ReviewDaoImplement implements ReviewDao {
 
             String updateSql = "UPDATE reviews SET useful = useful + 1 WHERE review_id = ?";
             jdbcTemplate.update(updateSql, reviewId);
+            updateReviewPositiveStatus(reviewId);
         } else {
             throw new IllegalStateException("Пользователь уже поставил лайк к данному отзыву.");
         }
@@ -69,6 +70,7 @@ public class ReviewDaoImplement implements ReviewDao {
 
             String updateSql = "UPDATE reviews SET useful = useful - 1 WHERE review_id = ?";
             jdbcTemplate.update(updateSql, reviewId);
+            updateReviewPositiveStatus(reviewId);
         } else {
             throw new IllegalStateException("У пользователя нет лайка к данному отзыву.");
         }
@@ -84,6 +86,7 @@ public class ReviewDaoImplement implements ReviewDao {
 
             String updateSql = "UPDATE reviews SET useful = useful - 1 WHERE review_id = ?";
             jdbcTemplate.update(updateSql, reviewId);
+            updateReviewPositiveStatus(reviewId);
         } else {
             throw new IllegalStateException("Пользователь уже поставил дизлайк к данному отзыву.");
         }
@@ -101,6 +104,7 @@ public class ReviewDaoImplement implements ReviewDao {
 
             String updateSql = "UPDATE reviews SET useful = useful + 1 WHERE review_id = ?";
             jdbcTemplate.update(updateSql, reviewId);
+            updateReviewPositiveStatus(reviewId);
         } else {
             throw new IllegalStateException("У пользователя нет дизлайка к данному отзыву.");
         }
@@ -111,6 +115,7 @@ public class ReviewDaoImplement implements ReviewDao {
     public Review updateReview(Review review) {
         String sql = "UPDATE reviews SET content = ?, is_positive = ?, useful = ? WHERE review_id = ?";
         jdbcTemplate.update(sql, review.getContent(), review.isPositive(), review.getUseful(), review.getReviewId());
+        updateReviewPositiveStatus(review.getReviewId());
         return review;
     }
 
@@ -150,7 +155,6 @@ public class ReviewDaoImplement implements ReviewDao {
         }
     }
 
-
     public Review mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         Review review = new Review();
         review.setReviewId(resultSet.getInt("review_id")); //ID отзыва, генерируем
@@ -161,4 +165,11 @@ public class ReviewDaoImplement implements ReviewDao {
         review.setUseful(resultSet.getInt("useful"));// число лайков
         return review;
     }
+
+    private void updateReviewPositiveStatus(int reviewId) {
+        String updateSql = "UPDATE reviews SET is_positive = (useful > 0) WHERE review_id = ?";
+        jdbcTemplate.update(updateSql, reviewId);
+    }
+
+
 }

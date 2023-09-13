@@ -83,7 +83,8 @@ CREATE TABLE IF NOT EXISTS review_dislikes (
     dislike_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     review_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT review_id_fk_reviews FOREIGN KEY (review_id) REFERENCES reviews(review_id) ON DELETE CASCADE
 );
 
 
