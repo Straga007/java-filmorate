@@ -23,8 +23,8 @@ public class ReviewDaoImplement implements ReviewDao {
 
     @Override
     public Review saveReview(Review review) {
-        String sql = "INSERT INTO reviews (content, is_positive, user_id, film_id, useful, rating) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) " +
+                "VALUES (?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -35,7 +35,7 @@ public class ReviewDaoImplement implements ReviewDao {
             ps.setInt(3, review.getUserId());
             ps.setInt(4, review.getFilmId());
             ps.setInt(5, review.getUseful());
-            ps.setInt(6, review.getRating());
+            //ps.setInt(6, review.getRating());
             return ps;
         }, keyHolder);
 
@@ -45,15 +45,23 @@ public class ReviewDaoImplement implements ReviewDao {
         return review;
     }
 
+    @Override
+    public void addLikeToReview(int reviewId, int userId) {
+
+    }
+
 
     @Override
     public Review updateReview(Review review) {
-        return null;
+        String sql = "UPDATE reviews SET content = ?, is_positive = ?, useful = ? WHERE review_id = ?";
+        jdbcTemplate.update(sql, review.getContent(), review.isPositive(), review.getUseful(), /*review.getRating(),*/ review.getReviewId());
+        return review;
     }
 
     @Override
     public void deleteReview(int id) {
-
+        String sql = "DELETE FROM reviews WHERE review_id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
@@ -62,10 +70,30 @@ public class ReviewDaoImplement implements ReviewDao {
         return jdbcTemplate.queryForObject(sql, this::mapRow, id);
     }
 
+
     @Override
     public List<Review> getReviewsByFilmId(Long filmId, Integer count) {
-        return null;
+        String sql = "SELECT * FROM reviews";
+
+        if (filmId != null) {
+            sql += " WHERE film_id = ?";
+        }
+
+        if (count != null) {
+            sql += " LIMIT ?";
+        }
+
+        if (filmId != null && count != null) {
+            return jdbcTemplate.query(sql, this::mapRow, filmId, count);
+        } else if (filmId != null) {
+            return jdbcTemplate.query(sql, this::mapRow, filmId);
+        } else if (count != null) {
+            return jdbcTemplate.query(sql, this::mapRow, count);
+        } else {
+            return jdbcTemplate.query(sql, this::mapRow);
+        }
     }
+
 
     public Review mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         Review review = new Review();
@@ -75,7 +103,7 @@ public class ReviewDaoImplement implements ReviewDao {
         review.setUserId(resultSet.getInt("user_id"));// получаем от того кто оставил комент
         review.setFilmId(resultSet.getInt("film_id"));// получаем от того куда поставил комент
         review.setUseful(resultSet.getInt("useful"));// число лайков
-        review.setRating(resultSet.getInt("rating"));// если лайк +1 если дизлайк -1, так 0
+        //review.setRating(resultSet.getInt("rating"));// если лайк +1 если дизлайк -1, так 0
         return review;
     }
 }

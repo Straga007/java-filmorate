@@ -20,6 +20,9 @@ public class ReviewService {
     public Review addReview(Review review) {
         return reviewDao.saveReview(review);
     }
+    public void addLikeToReview(int reviewId,int userId){
+        reviewDao.addLikeToReview(reviewId,userId);
+    }
 
     public Review editReview(Review review) {
         return reviewDao.updateReview(review);
