@@ -32,6 +32,10 @@ public class Film {
     @NotEmpty(message = "genres can not be empty")
     @Size(min = 1, message = "at least one genre should be specified")
     private Collection<Genre> genres;
+    @NotEmpty(message = "genres can not be empty")
+    @Size(min = 1, message = "at least one genre should be specified")
+    private Collection<Director> directors;
+
     private Mpa mpa;
 
 
@@ -43,6 +47,7 @@ public class Film {
         this.duration = duration;
         this.likes = new HashSet<>();
         this.genres = new HashSet<>();
+        this.directors = new HashSet<>();
     }
 
 

@@ -102,3 +102,13 @@ CREATE TABLE IF NOT EXISTS events (
     CONSTRAINT event_type_con FOREIGN KEY (event_type) REFERENCES event_types (type_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT operation_type_con FOREIGN KEY (operation_type) REFERENCES operation_types(operation_id) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
+
+CREATE TABLE IF NOT EXISTS directors (
+    director_id INT NOT NULL primary key auto_increment ,
+    director_name CHARACTER VARYING(200)
+);
+
+CREATE TABLE IF NOT EXISTS films_director (
+    film_id INT REFERENCES films(film_id) ON DELETE CASCADE,
+    director_id INT REFERENCES directors(director_id) ON DELETE CASCADE
+);
