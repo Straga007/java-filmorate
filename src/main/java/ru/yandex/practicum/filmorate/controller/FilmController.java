@@ -81,4 +81,10 @@ public class FilmController {
         return filmService.getSortFilmByDirector(directorId, sortBy);
     }
 
+    @GetMapping("/common")
+    public Collection<Film> getCommonFilms(@RequestParam int userId,
+                                           @RequestParam int friendId) {
+        log.info("Пользователь с id " + userId + " запросил список общих фильмов с пользователем с id " + friendId);
+        return filmService.getListOfCommonFilms(userId, friendId);
+    }
 }

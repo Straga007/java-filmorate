@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS users CASCADE;
+
 -- Создание таблицы пользователей
 CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
@@ -17,7 +19,7 @@ CREATE TABLE IF NOT EXISTS mpa_ratings (
 -- Создание таблицы фильмов
 CREATE TABLE IF NOT EXISTS films (
     film_id integer not null primary key auto_increment,
-     name CHARACTER VARYING(100) NOT NULL,
+    name CHARACTER VARYING(100) NOT NULL,
     description CHARACTER VARYING(200),
     release_date DATE,
     duration INTEGER,
