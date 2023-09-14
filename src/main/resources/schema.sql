@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS friend_list (
 CREATE TABLE IF NOT EXISTS reviews (
     review_id SERIAL PRIMARY KEY,
     content TEXT NOT NULL,
-    is_positive BOOLEAN NOT NULL,
+    is_positive BOOLEAN,
     user_id INT NOT NULL,
     film_id INT NOT NULL,
     useful INT DEFAULT 0,

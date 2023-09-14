@@ -25,7 +25,7 @@ public class ReviewDaoImplement implements ReviewDao {
 
     @Override
     public Review saveReview(Review review) {
-        if (!review.getIsPositive()) {
+        if (review.getIsPositive() == null) {
             throw new ValidationException("Поле 'isPositive' должно быть указано.");
         }
         userAndFilmCheck(review);
@@ -36,7 +36,7 @@ public class ReviewDaoImplement implements ReviewDao {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"review_id"});
             ps.setString(1, review.getContent());
-            ps.setBoolean(2, review.getIsPositive());
+            ps.setString(2, review.getIsPositive());
             ps.setInt(3, review.getUserId());
             ps.setInt(4, review.getFilmId());
             ps.setInt(5, review.getUseful());
@@ -47,6 +47,7 @@ public class ReviewDaoImplement implements ReviewDao {
         int reviewId = Objects.requireNonNull(keyHolder.getKey()).intValue();
         review.setReviewId(reviewId);
         return review;
+
 
     }
 
@@ -162,7 +163,7 @@ public class ReviewDaoImplement implements ReviewDao {
         Review review = new Review();
         review.setReviewId(resultSet.getInt("review_id")); //ID отзыва, генерируем
         review.setContent(resultSet.getString("content")); // Получаем в теле
-        review.setPositive(resultSet.getBoolean("is_positive")); // если rating > 0 -> 1 or 0
+        review.setIsPositive(resultSet.getString("is_positive")); // если rating > 0 -> 1 or 0
         review.setUserId(resultSet.getInt("user_id"));// получаем от того кто оставил комент
         review.setFilmId(resultSet.getInt("film_id"));// получаем от того куда поставил комент
         review.setUseful(resultSet.getInt("useful"));// число лайков
