@@ -23,7 +23,7 @@ public class ReviewDaoImplement implements ReviewDao {
 
     @Override
     public Review saveReview(Review review) {
-        userAndFilmCheck(review);
+        //userAndFilmCheck(review);
         review.setUseful(0);
         String sql = "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -31,7 +31,7 @@ public class ReviewDaoImplement implements ReviewDao {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, new String[]{"review_id"});
             ps.setString(1, review.getContent());
-            ps.setBoolean(2, review.isPositive());
+            ps.setBoolean(2, review.getIsPositive());
             ps.setInt(3, review.getUserId());
             ps.setInt(4, review.getFilmId());
             ps.setInt(5, review.getUseful());
@@ -111,7 +111,7 @@ public class ReviewDaoImplement implements ReviewDao {
     @Override
     public Review updateReview(Review review) {
         String sql = "UPDATE reviews SET content = ?, is_positive = ?, useful = ? WHERE review_id = ?";
-        jdbcTemplate.update(sql, review.getContent(), review.isPositive(), review.getUseful(), review.getReviewId());
+        jdbcTemplate.update(sql, review.getContent(), review.getIsPositive(), review.getUseful(), review.getReviewId());
         return review;
     }
 
