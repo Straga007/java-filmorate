@@ -208,6 +208,34 @@ public class FilmDb implements FilmStorage {
         return films;
     }
 
+    @Override
+    public Collection<Film> findListOfCommonFilms(int userId, int friendId) {
+        if (!checkUserId(userId)) {
+            throw new NotFoundException("Фильм с идентификатором " + userId + " не найден!");
+        } else if (!checkUserId(friendId)) {
+            throw new NotFoundException("Фильм с идентификатором " + friendId + " не найден!");
+        } else if (!checkFriendship(userId, friendId)) {
+            throw new NotFoundException("Пользователи с id " + userId + " и " + friendId + " не являются друзьями!");
+        }
+        String sqlQuery = "SELECT f.*, " +
+                "m.rating as mpa_name, " +
+                "m.rating_id as mpa_id, " +
+                "m.description as mpa_description, " +
+                "FROM films as f " +
+                "JOIN mpa_ratings as m ON f.mpa_id = m.rating_id " +
+                "LEFT JOIN films_likes as l ON l.film_id = f.film_id " +
+                "WHERE f.film_id IN (SELECT l.film_id FROM films_likes as l WHERE user_id = ? AND " +
+                "film_id IN (SELECT l.film_id FROM films_likes as l WHERE user_id = ?) " +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(l.user_id) DESC";
+
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm, userId, friendId);
+        getFilmGenres(films);
+        getFilmLikes(films);
+        getFilmDirector(films);
+        return films;
+    }
+
     public void deleteGenresFromFilm(Film film) {
         String sqlQuery = "DELETE FROM films_genres WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, film.getId());
@@ -257,6 +285,16 @@ public class FilmDb implements FilmStorage {
 
     private boolean checkFilmId(int id) {
         String sql = "SELECT EXISTS(SELECT 1 FROM films WHERE film_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
+    }
+
+    private boolean checkFriendship(int userId, int friendId) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM friend_list WHERE user_id = ? AND friend_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, userId, friendId));
+    }
+
+    private boolean checkUserId(int id) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM users WHERE user_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 
