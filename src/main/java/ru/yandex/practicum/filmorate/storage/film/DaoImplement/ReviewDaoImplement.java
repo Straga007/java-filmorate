@@ -23,6 +23,7 @@ public class ReviewDaoImplement implements ReviewDao {
 
     @Override
     public Review saveReview(Review review) {
+        userAndFilmCheck(review);
         review.setUseful(0);
         String sql = "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -167,9 +168,25 @@ public class ReviewDaoImplement implements ReviewDao {
     }
 
     private void updateReviewPositiveStatus(int reviewId) {
-        String updateSql = "UPDATE reviews SET is_positive = (useful > 0) WHERE review_id = ?";
+        String updateSql = "UPDATE reviews SET is_positive = (useful >= 0) WHERE review_id = ?";
         jdbcTemplate.update(updateSql, reviewId);
     }
 
+    private void userAndFilmCheck(Review review) {
+        String userCheckSql = "SELECT COUNT(*) FROM users WHERE user_id = ?";
+        int userCount = jdbcTemplate.queryForObject(userCheckSql, Integer.class, review.getUserId());
 
+        if (userCount == 0) {
+            throw new IllegalArgumentException("Пользователь с указанным user_id не найден.");
+        }
+
+        String filmCheckSql = "SELECT COUNT(*) FROM films WHERE film_id = ?";
+        int filmCount = jdbcTemplate.queryForObject(filmCheckSql, Integer.class, review.getFilmId());
+
+        if (filmCount == 0) {
+            throw new IllegalArgumentException("Пользователь с указанным user_id не найден.");
+        }
+    }
 }
+
+
