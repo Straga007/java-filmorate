@@ -4,6 +4,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.film.dao.ReviewDao;
 
@@ -23,7 +25,10 @@ public class ReviewDaoImplement implements ReviewDao {
 
     @Override
     public Review saveReview(Review review) {
-        //userAndFilmCheck(review);
+        if (!review.getIsPositive()) {
+            throw new ValidationException("Поле 'isPositive' должно быть указано.");
+        }
+        userAndFilmCheck(review);
         review.setUseful(0);
         String sql = "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -42,7 +47,9 @@ public class ReviewDaoImplement implements ReviewDao {
         int reviewId = Objects.requireNonNull(keyHolder.getKey()).intValue();
         review.setReviewId(reviewId);
         return review;
+
     }
+
 
     @Override
     public void addLikeToReview(int reviewId, int userId) {
@@ -168,15 +175,16 @@ public class ReviewDaoImplement implements ReviewDao {
         int userCount = jdbcTemplate.queryForObject(userCheckSql, Integer.class, review.getUserId());
 
         if (userCount == 0) {
-            throw new IllegalArgumentException("Пользователь с указанным user_id не найден.");
+            throw new NotFoundException("Пользователь с указанным user_id не найден.");
         }
 
         String filmCheckSql = "SELECT COUNT(*) FROM films WHERE film_id = ?";
         int filmCount = jdbcTemplate.queryForObject(filmCheckSql, Integer.class, review.getFilmId());
 
         if (filmCount == 0) {
-            throw new IllegalArgumentException("Пользователь с указанным user_id не найден.");
+            throw new NotFoundException("Пользователь с указанным user_id не найден.");
         }
+
     }
 }
 
