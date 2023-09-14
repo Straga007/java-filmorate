@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS users CASCADE;
+
 -- Создание таблицы пользователей
 CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
