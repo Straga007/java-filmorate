@@ -36,7 +36,7 @@ public class FeedDB implements FeedStorage {
     private Event makeEvent(ResultSet resultSet, int i) throws SQLException {
         return new Event(
                 resultSet.getInt("event_id"),
-                resultSet.getTimestamp("time_stamp"),
+                resultSet.getLong("time_stamp"),
                 resultSet.getInt("user_id"),
                 resultSet.getString("type_name"),
                 resultSet.getString("operation_name"),

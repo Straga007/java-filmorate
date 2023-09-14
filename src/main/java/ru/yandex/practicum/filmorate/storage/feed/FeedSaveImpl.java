@@ -21,7 +21,7 @@ public class FeedSaveImpl implements FeedSaveDao {
     @Override
     public void saveEvent(int userId, int eventType, int operationType, int entityId) {
         String sqlQuery = "INSERT INTO events (time_stamp, user_id, event_type, operation_type, entity_id) VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sqlQuery, Instant.now(), userId, eventType, operationType, entityId);
+        jdbcTemplate.update(sqlQuery, Instant.now().toEpochMilli(), userId, eventType, operationType, entityId);
     }
 
     @Override

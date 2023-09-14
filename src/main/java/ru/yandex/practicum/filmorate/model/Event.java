@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class Event {
     private int eventId;
-    private Timestamp timestamp;
+    private long timestamp;
     private int userId;
     private String eventType;
     private String operation;
