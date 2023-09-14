@@ -14,9 +14,9 @@ public class Review {
     int userId;
     int filmId;
     int useful;
-    String isPositive;
+    Boolean isPositive;
 
-    public String getIsPositive() {
+    public Boolean getIsPositive() {
         return isPositive;
     }
 }
