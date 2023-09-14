@@ -214,8 +214,6 @@ public class FilmDb implements FilmStorage {
             throw new NotFoundException("Фильм с идентификатором " + userId + " не найден!");
         } else if (!checkUserId(friendId)) {
             throw new NotFoundException("Фильм с идентификатором " + friendId + " не найден!");
-        } else if (!checkFriendship(userId, friendId)) {
-            throw new NotFoundException("Пользователи с id " + userId + " и " + friendId + " не являются друзьями!");
         }
         String sqlQuery = "SELECT f.*, " +
                 "m.rating as mpa_name, " +
@@ -225,7 +223,7 @@ public class FilmDb implements FilmStorage {
                 "JOIN mpa_ratings as m ON f.mpa_id = m.rating_id " +
                 "LEFT JOIN films_likes as l ON l.film_id = f.film_id " +
                 "WHERE f.film_id IN (SELECT l.film_id FROM films_likes as l WHERE user_id = ? AND " +
-                "film_id IN (SELECT l.film_id FROM films_likes as l WHERE user_id = ?) " +
+                "film_id IN (SELECT l.film_id FROM films_likes as l WHERE user_id = ?)) " +
                 "GROUP BY f.film_id " +
                 "ORDER BY COUNT(l.user_id) DESC";
 

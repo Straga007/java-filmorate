@@ -27,7 +27,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public Collection<Film> findListOfCommonFilms(int userId, int friendId) {
-        //TODO заменить
         return new ArrayList<>(films.values());
     }
 
