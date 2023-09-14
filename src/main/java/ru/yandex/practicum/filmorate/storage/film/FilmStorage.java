@@ -18,6 +18,6 @@ public interface FilmStorage {
 
     Film findFilm(@PathVariable int id);
 
-    Collection<Film> findPopularFilms(Integer count);
+    Collection<Film> findPopularFilms(Integer count, Integer genreId, Integer year);
 
 }
