@@ -28,6 +28,7 @@ public class ReviewDaoImplement implements ReviewDao {
         if (review.getIsPositive() == null) {
             throw new ValidationException("Поле 'isPositive' должно быть указано.");
         }
+
         userAndFilmCheck(review);
         review.setUseful(0);
         String sql = "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) " +
@@ -172,6 +173,9 @@ public class ReviewDaoImplement implements ReviewDao {
 
 
     private void userAndFilmCheck(Review review) {
+        if (review.getUserId() == 0 || review.getFilmId() == 0) {
+            throw new ValidationException("Пользователь с указанным user_id не найден.");
+        }
         String userCheckSql = "SELECT COUNT(*) FROM users WHERE user_id = ?";
         int userCount = jdbcTemplate.queryForObject(userCheckSql, Integer.class, review.getUserId());
 
