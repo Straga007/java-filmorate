@@ -256,7 +256,6 @@ public class FilmDb implements FilmStorage {
         getFilmGenres(films);
         getFilmLikes(films);
         getFilmDirector(films);
-        System.out.println(films);
         return films;
     }
 
