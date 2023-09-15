@@ -62,6 +62,30 @@ CREATE TABLE IF NOT EXISTS friend_list (
     CONSTRAINT user_id_fk FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT friend_id_fk FOREIGN KEY (friend_id) REFERENCES users(user_id) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
+CREATE TABLE IF NOT EXISTS reviews (
+    review_id SERIAL PRIMARY KEY,
+    content TEXT NOT NULL,
+    is_positive BOOLEAN,
+    user_id INT NOT NULL,
+    film_id INT NOT NULL,
+    useful INT DEFAULT 0,
+
+    CONSTRAINT user_id_fk_reviews FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT film_id_fk_reviews FOREIGN KEY (film_id) REFERENCES films(film_id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS review_likes (
+    like_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    review_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS review_dislikes (
+    dislike_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    review_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT review_id_fk_reviews FOREIGN KEY (review_id) REFERENCES reviews(review_id) ON DELETE CASCADE
+);
 
 CREATE TABLE IF NOT EXISTS directors (
     director_id INT NOT NULL primary key auto_increment ,
