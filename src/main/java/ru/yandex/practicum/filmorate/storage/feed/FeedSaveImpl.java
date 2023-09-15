@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.feed.EventType;
-import ru.yandex.practicum.filmorate.model.feed.OperationType;
+import ru.yandex.practicum.filmorate.model.feed.OperType;
 
 import java.time.Instant;
 
@@ -39,7 +39,7 @@ public class FeedSaveImpl implements FeedSaveDao {
     }
 
     @Override
-    public int getOperationTypeId(OperationType operationType) {
+    public int getOperationTypeId(OperType operationType) {
         switch (operationType) {
             case REMOVE:
                 return 1;

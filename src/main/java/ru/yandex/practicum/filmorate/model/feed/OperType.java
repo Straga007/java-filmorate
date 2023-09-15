@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.model.feed;
 
-public enum OperationType {
+public enum OperType {
     REMOVE,
     ADD,
     UPDATE

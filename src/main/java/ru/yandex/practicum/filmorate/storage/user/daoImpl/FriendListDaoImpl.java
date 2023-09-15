@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.feed.EventType;
-import ru.yandex.practicum.filmorate.model.feed.OperationType;
+import ru.yandex.practicum.filmorate.model.feed.OperType;
 import ru.yandex.practicum.filmorate.storage.feed.FeedSaveDao;
 import ru.yandex.practicum.filmorate.storage.user.dao.FriendListDao;
 
@@ -36,7 +36,7 @@ public class FriendListDaoImpl implements FriendListDao {
         String sqlQuery = "INSERT INTO friend_list(user_id, friend_id, confirmed)" +
                 "VALUES (?, ?, ?)";
         jdbcTemplate.update(sqlQuery, userId, friendId, true);
-        feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.FRIEND), feedSaveDao.getOperationTypeId(OperationType.ADD), friendId);
+        feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.FRIEND), feedSaveDao.getOperationTypeId(OperType.ADD), friendId);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class FriendListDaoImpl implements FriendListDao {
         }
         String sqlQuery = "DELETE FROM friend_list WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
-        feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.FRIEND), feedSaveDao.getOperationTypeId(OperationType.REMOVE), friendId);
+        feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.FRIEND), feedSaveDao.getOperationTypeId(OperType.REMOVE), friendId);
     }
 
     @Override

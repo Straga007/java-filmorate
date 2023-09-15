@@ -8,6 +8,9 @@ import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.feed.EventType;
+import ru.yandex.practicum.filmorate.model.feed.OperType;
+import ru.yandex.practicum.filmorate.storage.feed.FeedSaveDao;
 import ru.yandex.practicum.filmorate.storage.film.dao.ReviewDao;
 
 import java.sql.PreparedStatement;
@@ -19,9 +22,11 @@ import java.util.Objects;
 @Component
 public class ReviewDaoImplement implements ReviewDao {
     private final JdbcTemplate jdbcTemplate;
+    private final FeedSaveDao feedSaveDao;
 
-    public ReviewDaoImplement(JdbcTemplate jdbcTemplate) {
+    public ReviewDaoImplement(JdbcTemplate jdbcTemplate, FeedSaveDao feedSaveDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.feedSaveDao = feedSaveDao;
     }
 
     @Override
@@ -49,6 +54,7 @@ public class ReviewDaoImplement implements ReviewDao {
 
         int reviewId = Objects.requireNonNull(keyHolder.getKey()).intValue();
         review.setReviewId(reviewId);
+        feedSaveDao.saveEvent(review.getUserId(), feedSaveDao.getEventTypeId(EventType.REVIEW), feedSaveDao.getOperationTypeId(OperType.ADD), reviewId);
         return review;
 
 
@@ -123,14 +129,16 @@ public class ReviewDaoImplement implements ReviewDao {
     public Review updateReview(Review review) {
         String sql = "UPDATE reviews SET content = ?, is_positive = ?  WHERE review_id = ?";
         jdbcTemplate.update(sql, review.getContent(), review.getIsPositive(), review.getReviewId());
+        feedSaveDao.saveEvent(review.getReviewId(), feedSaveDao.getEventTypeId(EventType.REVIEW), feedSaveDao.getOperationTypeId(OperType.UPDATE), review.getReviewId());
         return getReviewById(review.getReviewId());
     }
 
     @Override
     public void deleteReview(int id) {
-
         String sql = "DELETE FROM reviews WHERE review_id = ?";
+        int userId = getReviewById(id).getUserId();
         jdbcTemplate.update(sql, id);
+        feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.REVIEW), feedSaveDao.getOperationTypeId(OperType.REMOVE), id);
     }
 
     @Override

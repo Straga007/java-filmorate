@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.feed.EventType;
-import ru.yandex.practicum.filmorate.model.feed.OperationType;
+import ru.yandex.practicum.filmorate.model.feed.OperType;
 import ru.yandex.practicum.filmorate.storage.feed.FeedSaveDao;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
 
@@ -34,7 +34,7 @@ public class LikesDaoImplement implements LikeDao {
         String sqlQuery = "INSERT INTO films_likes(film_id, user_id)" +
                 "VALUES(?, ?)";
         jdbcTemplate.update(sqlQuery, filmId, userId);
-        feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.LIKE), feedSaveDao.getOperationTypeId(OperationType.ADD), filmId);
+        feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.LIKE), feedSaveDao.getOperationTypeId(OperType.ADD), filmId);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class LikesDaoImplement implements LikeDao {
         }
         String sqlQuery = "DELETE FROM films_likes WHERE user_id = ? AND film_id = ?";
         jdbcTemplate.update(sqlQuery, userId, filmId);
-        feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.LIKE), feedSaveDao.getOperationTypeId(OperationType.REMOVE), filmId);
+        feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.LIKE), feedSaveDao.getOperationTypeId(OperType.REMOVE), filmId);
     }
 
     private int checkFilmId(int id) {
