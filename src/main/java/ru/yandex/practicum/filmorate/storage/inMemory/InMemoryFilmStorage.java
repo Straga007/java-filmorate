@@ -19,7 +19,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     final LocalDate invalidReleaseDate = LocalDate.of(1895, 12, 28);
 
 
-    public Collection<Film> findPopularFilms(Integer count) {
+    public Collection<Film> findPopularFilms(Integer count, Integer genreId, Integer year) {
         List<Film> allFilms = new ArrayList<>(films.values());
         allFilms.sort((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()));
         int filmsCount = count != null ? count : 10;
