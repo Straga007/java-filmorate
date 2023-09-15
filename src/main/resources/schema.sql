@@ -96,3 +96,29 @@ CREATE TABLE IF NOT EXISTS films_director (
     film_id INT REFERENCES films(film_id) ON DELETE CASCADE,
     director_id INT REFERENCES directors(director_id) ON DELETE CASCADE
 );
+
+-- Создание таблицы типов событий
+CREATE TABLE IF NOT EXISTS event_types (
+    type_id SERIAL PRIMARY KEY,
+    type_name CHARACTER VARYING(100) NOT NULL
+);
+
+-- Создание таблицы типов операций
+CREATE TABLE IF NOT EXISTS operation_types (
+    operation_id SERIAL PRIMARY KEY,
+    operation_name CHARACTER VARYING(100) NOT NULL
+);
+
+-- Создание таблицы событий
+CREATE TABLE IF NOT EXISTS events (
+    event_id SERIAL PRIMARY KEY,
+    time_stamp REAL NOT NULL,
+    user_id INT NOT NULL,
+    event_type INT NOT NULL,
+    operation_type INT NOT NULL,
+    entity_id INT NOT NULL,
+
+    CONSTRAINT user_id_con FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT event_type_con FOREIGN KEY (event_type) REFERENCES event_types (type_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT operation_type_con FOREIGN KEY (operation_type) REFERENCES operation_types(operation_id) ON DELETE RESTRICT ON UPDATE RESTRICT
+);
