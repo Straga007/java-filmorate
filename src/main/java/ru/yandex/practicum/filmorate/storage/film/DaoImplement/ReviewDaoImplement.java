@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
@@ -28,6 +29,7 @@ public class ReviewDaoImplement implements ReviewDao {
         if (review.getIsPositive() == null) {
             throw new ValidationException("Поле 'isPositive' должно быть указано.");
         }
+
 
         userAndFilmCheck(review);
         review.setUseful(0);
@@ -187,6 +189,9 @@ public class ReviewDaoImplement implements ReviewDao {
 
         if (userCount == 0) {
             throw new NotFoundException("Пользователь с указанным user_id не найден.");
+        }
+        if (review.getContent() == null) {
+            throw new InternalServerException("Отзыв не может быть пустым");
         }
 
         String filmCheckSql = "SELECT COUNT(*) FROM films WHERE film_id = ?";
