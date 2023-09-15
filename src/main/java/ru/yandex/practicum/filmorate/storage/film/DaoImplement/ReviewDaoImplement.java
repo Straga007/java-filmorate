@@ -137,9 +137,6 @@ public class ReviewDaoImplement implements ReviewDao {
         int userId = getReviewById(id).getUserId();
         jdbcTemplate.update(sql, id);
         feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.REVIEW), feedSaveDao.getOperationTypeId(OperType.REMOVE), id);
-
-        String sql = "DELETE FROM reviews WHERE review_id = ?";
-        jdbcTemplate.update(sql, id);
     }
 
     @Override
