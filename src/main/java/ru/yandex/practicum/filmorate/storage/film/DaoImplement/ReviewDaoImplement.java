@@ -121,17 +121,23 @@ public class ReviewDaoImplement implements ReviewDao {
     public Review updateReview(Review review) {
         String sql = "UPDATE reviews SET content = ?, is_positive = ?, useful = ? WHERE review_id = ?";
         jdbcTemplate.update(sql, review.getContent(), review.getIsPositive(), review.getUseful(), review.getReviewId());
-        return review;
+        return getReviewById(review.getReviewId());
     }
 
     @Override
     public void deleteReview(int id) {
+
         String sql = "DELETE FROM reviews WHERE review_id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     @Override
     public Review getReviewById(int id) {
+        String checkSql = "SELECT COUNT(*) FROM reviews WHERE review_id = ?";
+        int reviewCount = jdbcTemplate.queryForObject(checkSql, Integer.class, id);
+        if (reviewCount == 0) {
+            throw new NotFoundException("Отзыв с указанным review_id не существует.");
+        }
         String sql = "SELECT * FROM reviews WHERE review_id = ?";
         return jdbcTemplate.queryForObject(sql, this::mapRow, id);
     }
