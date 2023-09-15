@@ -152,7 +152,7 @@ public class ReviewDaoImplement implements ReviewDao {
         if (filmId != null) {
             sql += " WHERE film_id = ?";
         }
-
+        sql += " ORDER BY useful DESC";
         if (count != null) {
             sql += " LIMIT ?";
         }
