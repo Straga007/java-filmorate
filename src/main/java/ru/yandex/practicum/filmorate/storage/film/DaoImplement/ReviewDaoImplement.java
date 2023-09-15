@@ -121,8 +121,8 @@ public class ReviewDaoImplement implements ReviewDao {
 
     @Override
     public Review updateReview(Review review) {
-        String sql = "UPDATE reviews SET content = ?, is_positive = ?, useful = ? WHERE review_id = ?";
-        jdbcTemplate.update(sql, review.getContent(), review.getIsPositive(), review.getUseful(), review.getReviewId());
+        String sql = "UPDATE reviews SET content = ?, is_positive = ?  WHERE review_id = ?";
+        jdbcTemplate.update(sql, review.getContent(), review.getIsPositive(), review.getReviewId());
         return getReviewById(review.getReviewId());
     }
 
