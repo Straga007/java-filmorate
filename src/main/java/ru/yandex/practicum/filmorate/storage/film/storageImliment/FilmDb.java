@@ -204,8 +204,7 @@ public class FilmDb implements FilmStorage {
                 "ORDER BY COUNT(l.user_id) DESC " +
                 "LIMIT ?";
             films = jdbcTemplate.query(sqlQuery, this::makeFilm, count);
-        }
-        else if (genreId != null && year == null) {
+        } else if (genreId != null && year == null) {
             sqlQuery = "SELECT f.*, COUNT(fl.user_id) AS like_count, " +
                     "m.rating AS mpa_name, " +
                     "m.rating_id AS mpa_id, " +
@@ -220,8 +219,7 @@ public class FilmDb implements FilmStorage {
                     "ORDER BY like_count DESC " +
                     "LIMIT ?";
             films = jdbcTemplate.query(sqlQuery, this::makeFilm, genreId, count);
-        }
-        else if (year != null && genreId == null) {
+        } else if (year != null && genreId == null) {
             sqlQuery = "SELECT f.*, COUNT(fl.user_id) AS like_count, " +
                     "m.rating AS mpa_name, " +
                     "m.rating_id AS mpa_id, " +
@@ -236,8 +234,7 @@ public class FilmDb implements FilmStorage {
                     "ORDER BY like_count DESC " +
                     "LIMIT ?";
             films = jdbcTemplate.query(sqlQuery, this::makeFilm, year, count);
-        }
-        else {
+        } else {
             sqlQuery = "SELECT f.*, COUNT(fl.user_id) AS like_count, " +
                     "m.rating AS mpa_name, " +
                     "m.rating_id AS mpa_id, " +
