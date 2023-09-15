@@ -65,6 +65,10 @@ public class FilmService {
         return filmStorage.findPopularFilms(count, genreId, year);
     }
 
+    public Collection<Film> getListOfCommonFilms(int userId, int friendId) {
+        return filmStorage.findListOfCommonFilms(userId, friendId);
+    }
+
     private void validation(Film film) {
         final LocalDate latestReleaseDate = LocalDate.of(1895, 12, 28);
 

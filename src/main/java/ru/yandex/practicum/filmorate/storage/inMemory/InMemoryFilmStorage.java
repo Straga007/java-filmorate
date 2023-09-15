@@ -26,6 +26,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         return allFilms.subList(0, Math.min(filmsCount, allFilms.size()));
     }
 
+    public Collection<Film> findListOfCommonFilms(int userId, int friendId) {
+        return new ArrayList<>(films.values());
+    }
 
     public List<Film> findAll() {
         return new ArrayList<>(films.values());
