@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.Collection;
 
 @RestController
 @Slf4j
@@ -81,5 +81,12 @@ public class FilmController {
                                                       @RequestParam String sortBy) {
         log.info("Sort by " + sortBy + " directors by id " + directorId);
         return filmService.getSortFilmByDirector(directorId, sortBy);
+    }
+
+    @GetMapping("/common")
+    public Collection<Film> getCommonFilms(@RequestParam int userId,
+                                           @RequestParam int friendId) {
+        log.info("Пользователь с id " + userId + " запросил список общих фильмов с пользователем с id " + friendId);
+        return filmService.getListOfCommonFilms(userId, friendId);
     }
 }
