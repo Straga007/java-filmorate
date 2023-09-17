@@ -26,6 +26,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return allFilms.subList(0, Math.min(filmsCount, allFilms.size()));
     }
 
+    @Override
+    public Collection<Film> findAllPopularFilms(String query, String by) {
+        return null;
+    }
+
 
     public List<Film> findAll() {
         return new ArrayList<>(films.values());
