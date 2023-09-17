@@ -5,24 +5,27 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
-import java.util.Collection;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
-
+    private final UserStorage userStorage;
     private final LikeDao likesDao;
     private final DirectorDao directorDao;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, LikeDao likesDao, DirectorDao directorDao) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage, LikeDao likesDao, DirectorDao directorDao) {
         this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
         this.likesDao = likesDao;
         this.directorDao = directorDao;
     }
@@ -106,5 +109,37 @@ public class FilmService {
 
     public Collection<Film> getAllPopularFilms(String query, String by) {
         return filmStorage.findAllPopularFilms(query, by);
+    }
+
+    public List<Film> findRecommendedFilms(int id) {
+        HashMap<User, List<Film>> filmsTable = new HashMap<>();
+        List<Film> userFilms = filmStorage.findLikedFilmsByUser(id);
+        List<User> users = (List<User>) userStorage.findAll();
+
+        users.remove(userStorage.findUser(id));
+
+        for (User other : users) {
+            List<Film> otherFilms = filmStorage.findLikedFilmsByUser(other.getId());
+            filmsTable.put(other, otherFilms);
+        }
+
+        List<List<Film>> differencesTable = new ArrayList<>();
+        for (List<Film> value : filmsTable.values()) {
+            List<Film> filmsPackage = new ArrayList<>();
+
+            for (Film film : value) {
+                film = findFilm(film.getId());
+                if (!userFilms.contains(film)) {
+                    filmsPackage.add(film);
+                }
+            }
+            differencesTable.add(filmsPackage);
+        }
+
+        differencesTable.removeIf(List::isEmpty);
+
+        return differencesTable.stream()
+                .min(Comparator.comparing(List<Film>::size))
+                .orElse(new ArrayList<>());
     }
 }

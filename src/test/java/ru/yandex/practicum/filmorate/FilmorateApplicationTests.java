@@ -51,7 +51,7 @@ public class FilmorateApplicationTests {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        filmService = new FilmService(filmStorage, likeDao,directorDao);
+        filmService = new FilmService(filmStorage, userStorage, likeDao,directorDao);
     }
 
     private Film initializeDataFilm() {
