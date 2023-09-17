@@ -227,5 +227,14 @@ public class FilmDb implements FilmStorage {
         String sql = "SELECT EXISTS(SELECT 1 FROM films WHERE film_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
+
+
+    @Override
+    public List<Film> findLikedFilmsByUser(int id) {
+        String queryToFindUserFilms = "SELECT * FROM films " +
+                "JOIN mpa_ratings m ON m.mpa_id = films.mpa_id " +
+                "WHERE films.film_id IN (SELECT film_id FROM films_likes WHERE (user_id = ?)";
+        return jdbcTemplate.query(queryToFindUserFilms, (rs, rowNum) -> makeFilm(rs, id), id);
+    }
 }
 
