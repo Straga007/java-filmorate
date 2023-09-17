@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.Collection;
 
 @RestController
 @Slf4j
@@ -63,9 +63,11 @@ public class FilmController {
 
     @GetMapping("/popular")
     public Collection<Film> getPopularFilms(
-            @RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
+            @RequestParam(value = "count", defaultValue = "10", required = false) Integer count,
+            @RequestParam(value = "genreId", required = false) Integer genreId,
+            @RequestParam(value = "year", required = false) Integer year) {
         log.info("Получен запрос на вывод {} популярных фильмов", count);
-        return filmService.getPopularFilms(count);
+        return filmService.getPopularFilms(count, genreId, year);
     }
 
     @DeleteMapping("{id}/like/{userId}")
@@ -88,4 +90,10 @@ public class FilmController {
         return filmService.getAllPopularFilms(query, by);
     }
 
+    @GetMapping("/common")
+    public Collection<Film> getCommonFilms(@RequestParam int userId,
+                                           @RequestParam int friendId) {
+        log.info("Пользователь с id " + userId + " запросил список общих фильмов с пользователем с id " + friendId);
+        return filmService.getListOfCommonFilms(userId, friendId);
+    }
 }
