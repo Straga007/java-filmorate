@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -191,6 +192,11 @@ public class FilmDb implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> findPopularFilms(Integer count) {
+        return null;
+    }
+
+    @Override
     public Collection<Film> findPopularFilms(Integer count, Integer genreId, Integer year) {
         String sqlQuery;
         List<Film> films;
@@ -278,6 +284,77 @@ public class FilmDb implements FilmStorage {
                 "ORDER BY COUNT(l.user_id) DESC";
 
         List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm, userId, friendId);
+        getFilmGenres(films);
+        getFilmLikes(films);
+        getFilmDirector(films);
+        return films;
+    }
+
+    @Override
+    public Collection<Film> findAllPopularFilms(String query, String by) {
+        if (query == null & by == null || query.isBlank() & by.isBlank()) {
+            return getAllFilmSortedByPopular();
+        } else if (query != null & by != null || !query.isBlank() & !by.isBlank()) {
+            String[] byAll = by.split(",");
+            if (byAll.length == 1) {
+                if (byAll[0].equals("title")) {
+                    String query1 = query.substring(0).toLowerCase();
+                    String query2 = query.substring(0, 1).toUpperCase() + query.substring(1).toLowerCase();
+                    return getAllFilmSortedByPopular().stream()
+                            .filter(film -> film.getName().contains(query1) || film.getName().contains(query2))
+                            .collect(Collectors.toList());
+                } else if (byAll[0].equals("director")) {
+                    String query1 = query.substring(0, 1).toLowerCase() + query.substring(1).toLowerCase();
+                    String query2 = query.substring(0, 1).toUpperCase() + query.substring(1).toLowerCase();
+                    return getAllFilmsSortedByNameDirector(query1, query2);
+                } else {
+                    throw new ValidationException("некорректный запрос в by" + byAll[0]);
+                }
+            } else if (byAll.length == 2) {
+                String query1 = query.substring(0, 1).toLowerCase() + query.substring(1).toLowerCase();
+                String query2 = query.substring(0, 1).toUpperCase() + query.substring(1).toLowerCase();
+                Collection<Film> filmsByDirector = getAllFilmsSortedByNameDirector(query1, query2);
+                Collection<Film> filmsByTitle = getAllFilmSortedByPopular().stream()
+                        .filter(film -> film.getName().contains(query1) || film.getName().contains(query2))
+                        .collect(Collectors.toList());
+                filmsByDirector.addAll(filmsByTitle);
+                return filmsByDirector;
+            } else {
+                throw new ValidationException("Некорректный запрос");
+            }
+        } else {
+            throw new ValidationException("Некорректный запрос, запрос должен состоять из имя режиссера и названия");
+        }
+    }
+
+    private Collection<Film> getAllFilmSortedByPopular() {
+        String sqlQuery = "SELECT f.*, " +
+                "m.rating as mpa_name, " +
+                "m.rating_id as mpa_id, " +
+                "m.description as mpa_description, " +
+                "FROM films as f " +
+                "JOIN mpa_ratings as m ON f.mpa_id = m.rating_id " +
+                "LEFT JOIN films_likes as l ON l.film_id = f.film_id " +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(l.user_id) DESC";
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm);
+        getFilmGenres(films);
+        getFilmLikes(films);
+        getFilmDirector(films);
+        return films;
+    }
+
+    private Collection<Film> getAllFilmsSortedByNameDirector(String nameDirector1, String nameDirector2) {
+        String sqlQuery = "SELECT f.FILM_ID ,f.NAME ,f.DESCRIPTION , f.RELEASE_DATE , f.DURATION , " +
+                "m.rating as mpa_name, " +
+                "m.rating_id as mpa_id, " +
+                "m.description as mpa_description, " +
+                "FROM FILMS_DIRECTOR AS fd " +
+                "JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
+                "JOIN FILMS AS f ON fd.FILM_ID = f.FILM_ID " +
+                "JOIN mpa_ratings as m ON f.mpa_id = m.rating_id " +
+                "WHERE d.DIRECTOR_NAME LIKE '%" + nameDirector1 + "%' OR d.DIRECTOR_NAME LIKE '%" + nameDirector2 + "%'";
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm);
         getFilmGenres(films);
         getFilmLikes(films);
         getFilmDirector(films);

@@ -90,9 +90,7 @@ public class FilmService {
         Director director = directorDao.getDirectorById(directorId);
         if (sortBy.equals("year") || sortBy.equals("likes")) {
             return filmStorage.findAll().stream()
-                    .filter(film -> {
-                        return film.getDirectors().contains(director);
-                    })
+                    .filter(film -> film.getDirectors().contains(director))
                     .sorted((f1, f2) -> {
                         if (sortBy.equals("year")) {
                             return f1.getReleaseDate().compareTo(f2.getReleaseDate());
@@ -104,5 +102,9 @@ public class FilmService {
         } else {
             throw new ValidationException("Некорректный запрос на sort" + sortBy);
         }
+    }
+
+    public Collection<Film> getAllPopularFilms(String query, String by) {
+        return filmStorage.findAllPopularFilms(query, by);
     }
 }

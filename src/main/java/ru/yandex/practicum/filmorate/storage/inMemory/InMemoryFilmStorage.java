@@ -26,6 +26,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return allFilms.subList(0, Math.min(filmsCount, allFilms.size()));
     }
 
+    @Override
+    public Collection<Film> findAllPopularFilms(String query, String by) {
+        return null;
+    }
+
     public Collection<Film> findListOfCommonFilms(int userId, int friendId) {
         return new ArrayList<>(films.values());
     }
@@ -67,6 +72,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         } else {
             throw new NotFoundException("Не нашли фильм с id=" + id);
         }
+    }
+
+    @Override
+    public Collection<Film> findPopularFilms(Integer count) {
+        return null;
     }
 
 

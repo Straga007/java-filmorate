@@ -18,6 +18,10 @@ public interface FilmStorage {
 
     Film findFilm(@PathVariable int id);
 
+    Collection<Film> findPopularFilms(Integer count);
+
+    Collection<Film> findAllPopularFilms(String query, String by);
+
     Collection<Film> findPopularFilms(Integer count, Integer genreId, Integer year);
 
     Collection<Film> findListOfCommonFilms(int userId, int friendId);
