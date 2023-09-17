@@ -54,11 +54,11 @@ public class FilmDb implements FilmStorage {
     @Override
     public Collection<Film> findAll() {
         String sqlQuery = "SELECT f.*, " +
-                "m.rating as mpa_name, " +
-                "m.description as mpa_description, " +
-                "m.rating_id as mpa_id " +
-                "FROM films as f " +
-                "JOIN mpa_ratings as m ON f.mpa_id = m.rating_id ";
+                "m.rating AS mpa_name, " +
+                "m.description AS mpa_description, " +
+                "m.rating_id AS mpa_id " +
+                "FROM films AS f " +
+                "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id ";
         List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm);
         getFilmGenres(films);
         getFilmLikes(films);
@@ -118,7 +118,7 @@ public class FilmDb implements FilmStorage {
 
         try {
             String sqlQuery = "INSERT INTO films (name, description, release_date, duration, mpa_id)"
-                    + "values (?, ?, ?, ?, ?)";
+                    + "VALUES (?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"film_id"});
@@ -177,11 +177,11 @@ public class FilmDb implements FilmStorage {
             throw new NotFoundException("Фильм с идентификатором " + id + " не найден!");
         }
         String sqlQuery = "SELECT f.*, " +
-                "m.rating as mpa_name, " +
-                "m.description as mpa_description, " +
-                "m.rating_id as mpa_id, " +
-                "FROM films as f " +
-                "JOIN mpa_ratings as m ON f.mpa_id = m.rating_id " +
+                "m.rating AS mpa_name, " +
+                "m.description AS mpa_description, " +
+                "m.rating_id AS mpa_id, " +
+                "FROM films AS f " +
+                "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id " +
                 "WHERE film_id = ?";
 
         Film film = jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, id);
@@ -202,15 +202,15 @@ public class FilmDb implements FilmStorage {
         List<Film> films;
         if (genreId == null && year == null) {
             sqlQuery = "SELECT f.*, " +
-                "m.rating as mpa_name, " +
-                "m.rating_id as mpa_id, " +
-                "m.description as mpa_description, " +
-                "FROM films as f " +
-                "JOIN mpa_ratings as m ON f.mpa_id = m.rating_id " +
-                "LEFT JOIN films_likes as l ON l.film_id = f.film_id " +
-                "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.user_id) DESC " +
-                "LIMIT ?";
+                    "m.rating AS mpa_name, " +
+                    "m.rating_id AS mpa_id, " +
+                    "m.description AS mpa_description, " +
+                    "FROM films AS f " +
+                    "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id " +
+                    "LEFT JOIN films_likes AS l ON l.film_id = f.film_id " +
+                    "GROUP BY f.film_id " +
+                    "ORDER BY COUNT(l.user_id) DESC " +
+                    "LIMIT ?";
             films = jdbcTemplate.query(sqlQuery, this::makeFilm, count);
         } else if (genreId != null && year == null) {
             sqlQuery = "SELECT f.*, COUNT(fl.user_id) AS like_count, " +
@@ -272,14 +272,14 @@ public class FilmDb implements FilmStorage {
             throw new NotFoundException("Фильм с идентификатором " + friendId + " не найден!");
         }
         String sqlQuery = "SELECT f.*, " +
-                "m.rating as mpa_name, " +
-                "m.rating_id as mpa_id, " +
-                "m.description as mpa_description, " +
-                "FROM films as f " +
-                "JOIN mpa_ratings as m ON f.mpa_id = m.rating_id " +
-                "LEFT JOIN films_likes as l ON l.film_id = f.film_id " +
-                "WHERE f.film_id IN (SELECT l.film_id FROM films_likes as l WHERE user_id = ? AND " +
-                "film_id IN (SELECT l.film_id FROM films_likes as l WHERE user_id = ?)) " +
+                "m.rating AS mpa_name, " +
+                "m.rating_id AS mpa_id, " +
+                "m.description AS mpa_description, " +
+                "FROM films AS f " +
+                "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id " +
+                "LEFT JOIN films_likes AS l ON l.film_id = f.film_id " +
+                "WHERE f.film_id IN (SELECT l.film_id FROM films_likes AS l WHERE user_id = ? AND " +
+                "film_id IN (SELECT l.film_id FROM films_likes AS l WHERE user_id = ?)) " +
                 "GROUP BY f.film_id " +
                 "ORDER BY COUNT(l.user_id) DESC";
 
@@ -329,12 +329,12 @@ public class FilmDb implements FilmStorage {
 
     private Collection<Film> getAllFilmSortedByPopular() {
         String sqlQuery = "SELECT f.*, " +
-                "m.rating as mpa_name, " +
-                "m.rating_id as mpa_id, " +
-                "m.description as mpa_description, " +
-                "FROM films as f " +
-                "JOIN mpa_ratings as m ON f.mpa_id = m.rating_id " +
-                "LEFT JOIN films_likes as l ON l.film_id = f.film_id " +
+                "m.rating AS mpa_name, " +
+                "m.rating_id AS mpa_id, " +
+                "m.description AS mpa_description, " +
+                "FROM films AS f " +
+                "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id " +
+                "LEFT JOIN films_likes AS l ON l.film_id = f.film_id " +
                 "GROUP BY f.film_id " +
                 "ORDER BY COUNT(l.user_id) DESC";
         List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm);
