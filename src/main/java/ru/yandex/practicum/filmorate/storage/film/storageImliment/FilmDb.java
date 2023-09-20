@@ -35,19 +35,25 @@ public class FilmDb implements FilmStorage {
         this.likesDao = likesDao;
     }
 
+
     @Override
-    public void deleteFilm(int id) {
-        String deleteLikesQuery = "DELETE FROM films_likes WHERE film_id = ?";
-        jdbcTemplate.update(deleteLikesQuery, id);
+    public Film findFilm(int id) {
+        if (!checkFilmId(id)) {
+            throw new NotFoundException("Фильм с идентификатором " + id + " не найден!");
+        }
+        String sqlQuery = "SELECT f.*, " +
+                "m.rating AS mpa_name, " +
+                "m.description AS mpa_description, " +
+                "m.rating_id AS mpa_id, " +
+                "FROM films AS f " +
+                "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id " +
+                "WHERE film_id = ?";
 
-        String deleteGenresQuery = "DELETE FROM films_genres WHERE film_id = ?";
-        jdbcTemplate.update(deleteGenresQuery, id);
-
-        String deleteDirectorQuery = "DELETE FROM films_director WHERE film_id = ?";
-        jdbcTemplate.update(deleteDirectorQuery, id);
-
-        String deleteFilmQuery = "DELETE FROM films WHERE film_id = ?";
-        jdbcTemplate.update(deleteFilmQuery, id);
+        Film film = jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, id);
+        film.setGenres(getGenresOfFilm(id));
+        film.setDirectors(getDirectorOfFilm(id));
+        film.setLikes(likesDao.getFilmLikes(id));
+        return film;
     }
 
     @Override
@@ -63,6 +69,21 @@ public class FilmDb implements FilmStorage {
         getFilmLikes(films);
         getFilmDirector(films);
         return films;
+    }
+
+    @Override
+    public void deleteFilm(int id) {
+        String deleteLikesQuery = "DELETE FROM films_likes WHERE film_id = ?";
+        jdbcTemplate.update(deleteLikesQuery, id);
+
+        String deleteGenresQuery = "DELETE FROM films_genres WHERE film_id = ?";
+        jdbcTemplate.update(deleteGenresQuery, id);
+
+        String deleteDirectorQuery = "DELETE FROM films_director WHERE film_id = ?";
+        jdbcTemplate.update(deleteDirectorQuery, id);
+
+        String deleteFilmQuery = "DELETE FROM films WHERE film_id = ?";
+        jdbcTemplate.update(deleteFilmQuery, id);
     }
 
     private void getFilmGenres(List<Film> films) {
@@ -169,26 +190,6 @@ public class FilmDb implements FilmStorage {
         return film;
     }
 
-
-    @Override
-    public Film findFilm(int id) {
-        if (!checkFilmId(id)) {
-            throw new NotFoundException("Фильм с идентификатором " + id + " не найден!");
-        }
-        String sqlQuery = "SELECT f.*, " +
-                "m.rating AS mpa_name, " +
-                "m.description AS mpa_description, " +
-                "m.rating_id AS mpa_id, " +
-                "FROM films AS f " +
-                "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id " +
-                "WHERE film_id = ?";
-
-        Film film = jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, id);
-        film.setGenres(getGenresOfFilm(id));
-        film.setDirectors(getDirectorOfFilm(id));
-        film.setLikes(likesDao.getFilmLikes(id));
-        return film;
-    }
 
     @Override
     public Collection<Film> findPopularFilms(Integer count) {

@@ -37,7 +37,7 @@ public class Film {
     @Size(min = 1, message = "at least one genre should be specified")
     private Collection<Director> directors;
     private Mpa mpa;
-    private Set<Mark> marks = new HashSet<>();
+    private Set<Mark> marks;
 
     public Film(String name, String description, LocalDate releaseDate, int duration, int id) {
         this.id = id;
@@ -48,30 +48,7 @@ public class Film {
         this.likes = new HashSet<>();
         this.genres = new HashSet<>();
         this.directors = new HashSet<>();
+        this.marks = new HashSet<>();
     }
 
-    public Film(String name, String description, LocalDate releaseDate, int duration, Set<Integer> likes, ArrayList<Genre> genres, Collection<Director> directors, Mpa mpa, Set<Mark> marks) {
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-        this.likes = likes;
-        this.genres = genres;
-        this.directors = directors;
-        this.mpa = mpa;
-        this.marks = marks;
-    }
-
-    public Film(int id, String name, String description, LocalDate releaseDate, int duration, HashSet<Integer> likes, ArrayList<Genre> genres, ArrayList<Director> directors, Mpa mpa, Set<Mark> marks) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-        this.likes = likes;
-        this.genres = genres;
-        this.directors = directors;
-        this.mpa = mpa;
-        this.marks = marks;
-    }
 }

@@ -53,7 +53,6 @@ public class FilmService {
                 .peek(f -> f.setLikes(new HashSet<>(markStorage.findLikes(f))))
                 .peek(film -> film.setMarks(new HashSet<>(markStorage.findMarks(film))))
                 .findFirst().get();
-//        return filmStorage.findFilm(id);
     }
 
     public Collection<Film> findAll() {
@@ -61,7 +60,6 @@ public class FilmService {
                 .peek(film -> film.setLikes(new HashSet<>(markStorage.findLikes(film))))
                 .peek(film -> film.setMarks(new HashSet<>(markStorage.findMarks(film))))
                 .collect(Collectors.toList());
-//        return filmStorage.findAll();
     }
 
     public void addLike(int filmId, Integer userId) {
@@ -154,10 +152,7 @@ public class FilmService {
         // Получаем список фильмов
         List<Film> films = new ArrayList<>();
         for (Integer filmId : filmsId) {
-            films.add(filmStorage.findFilmById(filmId).stream()
-                    .peek(f -> f.setLikes(new HashSet<>(markStorage.findLikes(f))))
-                    .peek(film -> film.setMarks(new HashSet<>(markStorage.findMarks(film))))
-                    .findFirst().get());
+            films.add(filmStorage.findFilm(filmId));
         }
 
         return films;
