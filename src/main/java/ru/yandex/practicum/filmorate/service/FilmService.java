@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.dao.MarkDao;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
@@ -22,16 +20,13 @@ public class FilmService {
     private final UserStorage userStorage;
     private final LikeDao likesDao;
     private final DirectorDao directorDao;
-    @Qualifier("markDaoImplement")
-    private final MarkDao markStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage, LikeDao likesDao, DirectorDao directorDao, MarkDao markStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage, LikeDao likesDao, DirectorDao directorDao) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.likesDao = likesDao;
         this.directorDao = directorDao;
-        this.markStorage = markStorage;
     }
 
     public void createFilm(Film film) {
@@ -49,17 +44,11 @@ public class FilmService {
     }
 
     public Film findFilm(int id) {
-        return filmStorage.findFilmById(id).stream()
-                .peek(f -> f.setLikes(new HashSet<>(markStorage.findLikes(f))))
-                .peek(film -> film.setMarks(new HashSet<>(markStorage.findMarks(film))))
-                .findFirst().get();
+        return filmStorage.findFilm(id);
     }
 
     public Collection<Film> findAll() {
-        return filmStorage.findAll().stream()
-                .peek(film -> film.setLikes(new HashSet<>(markStorage.findLikes(film))))
-                .peek(film -> film.setMarks(new HashSet<>(markStorage.findMarks(film))))
-                .collect(Collectors.toList());
+        return filmStorage.findAll();
     }
 
     public void addLike(int filmId, Integer userId) {
@@ -119,42 +108,5 @@ public class FilmService {
 
     public Collection<Film> getAllPopularFilms(String query, String by) {
         return filmStorage.findAllPopularFilms(query, by);
-    }
-
-    public List<Film> findRecommendedFilms(int id) {
-        // проверка id пользователя
-        if (!userStorage.isFindUserById(id)) {
-            return null;
-        }
-        Map<Integer, Set<Integer>> usersWithPositiveMarks = markStorage.findAllUsersWithPositiveMarks();
-        // Set с filmId для пользователя id
-        Set<Integer> userMarkFilms = usersWithPositiveMarks.get(id);
-        usersWithPositiveMarks.remove(id);
-        if (userMarkFilms == null || usersWithPositiveMarks.isEmpty()) {
-            return Collections.EMPTY_LIST;
-        }
-        // Ищем пользователя с наибольшим совпадением
-        Integer userIdWithTopFreq = -1;
-        int topFreq = -1;
-        for (Integer userId : usersWithPositiveMarks.keySet()) {
-            Set<Integer> filmsId = new HashSet<>(usersWithPositiveMarks.get(userId));
-            filmsId.retainAll(userMarkFilms);
-            int countFreq = filmsId.size();
-            if (countFreq > topFreq) {
-                topFreq = countFreq;
-                userIdWithTopFreq = userId;
-            }
-        }
-        // Получаем Set с filmId для пользователя с наибольшим совпадением
-        Set<Integer> filmsId = usersWithPositiveMarks.get(userIdWithTopFreq);
-        // Удаляем совпадающие filmId
-        filmsId.removeAll(userMarkFilms);
-        // Получаем список фильмов
-        List<Film> films = new ArrayList<>();
-        for (Integer filmId : filmsId) {
-            films.add(filmStorage.findFilm(filmId));
-        }
-
-        return films;
     }
 }

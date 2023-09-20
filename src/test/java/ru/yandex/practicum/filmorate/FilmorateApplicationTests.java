@@ -18,7 +18,6 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.dao.MarkDao;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
@@ -48,12 +47,11 @@ public class FilmorateApplicationTests {
     private FilmService filmService;
     @Mock
     private DirectorDao directorDao;
-    private MarkDao markStorage;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        filmService = new FilmService(filmStorage, userStorage, likeDao,directorDao, markStorage);
+        filmService = new FilmService(filmStorage, userStorage, likeDao, directorDao);
     }
 
     private Film initializeDataFilm() {
