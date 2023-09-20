@@ -84,11 +84,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
     }
 
-    @Override
-    public Collection<Film> findPopularFilms(Integer count) {
-        return null;
-    }
-
 
     public void validate(Film film) {
         String name = film.getName();

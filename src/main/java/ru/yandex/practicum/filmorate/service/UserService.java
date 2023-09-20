@@ -17,7 +17,7 @@ public class UserService {
     private final FriendListDao friendListDao;
 
     @Autowired
-    public UserService(UserStorage userStorage, FriendListDao friendListDao,FilmStorage filmStorage) {
+    public UserService(UserStorage userStorage, FriendListDao friendListDao, FilmStorage filmStorage) {
         this.userStorage = userStorage;
         this.friendListDao = friendListDao;
         this.filmStorage = filmStorage;
@@ -62,7 +62,8 @@ public class UserService {
     public List<User> getCommonFriends(int userId, int friendId) {
         return friendListDao.getCommonFriends(userId, friendId);
     }
-    public List<Film> findRecommendedFilms(int id){
+
+    public List<Film> findRecommendedFilms(int id) {
         return filmStorage.getRecommendations(id);
     }
 }

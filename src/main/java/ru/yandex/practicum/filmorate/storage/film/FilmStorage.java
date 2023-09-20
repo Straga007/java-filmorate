@@ -20,8 +20,6 @@ public interface FilmStorage {
 
     Film findFilm(@PathVariable int id);
 
-    Collection<Film> findPopularFilms(Integer count);
-
     Collection<Film> findAllPopularFilms(String query, String by);
 
     Collection<Film> findPopularFilms(Integer count, Integer genreId, Integer year);
@@ -29,5 +27,6 @@ public interface FilmStorage {
     Collection<Film> findListOfCommonFilms(int userId, int friendId);
 
     Optional<Film> findFilmById(int filmId);
+
     List<Film> getRecommendations(int id);
 }

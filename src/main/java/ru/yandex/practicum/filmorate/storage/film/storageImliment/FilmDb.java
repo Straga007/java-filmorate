@@ -192,11 +192,6 @@ public class FilmDb implements FilmStorage {
 
 
     @Override
-    public Collection<Film> findPopularFilms(Integer count) {
-        return null;
-    }
-
-    @Override
     public Collection<Film> findPopularFilms(Integer count, Integer genreId, Integer year) {
         String sqlQuery;
         List<Film> films;
@@ -459,47 +454,22 @@ public class FilmDb implements FilmStorage {
 
     @Override
     public List<Film> getRecommendations(int id) {
-        List<Integer> similarUserIds = findUsersWithMostLikedFilms(id);
-
-        List<Film> recommendedFilms = findRecommendedFilms(id, similarUserIds);
-
-        return recommendedFilms;
-    }
-
-    private List<Integer> findUsersWithMostLikedFilms(int targetUserId) {
-        String sqlQuery = "SELECT l1.user_id " +
-                "FROM films_likes AS l1 " +
-                "INNER JOIN films_likes AS l2 ON l1.film_id = l2.film_id " +
-                "WHERE l1.user_id <> l2.user_id " +
-                "AND l1.user_id = ? " +
-                "GROUP BY l1.user_id " +
-                "ORDER BY COUNT(l2.user_id) DESC " +
-                "LIMIT 5";
-        List<Integer> similarUserIds = jdbcTemplate.queryForList(sqlQuery, Integer.class, targetUserId);
-        return similarUserIds;
-    }
-
-    private List<Film> findRecommendedFilms(int targetUserId, List<Integer> similarUserIds) {
-        String sqlQuery = "SELECT DISTINCT f.* " +
-                "FROM films_likes AS l " +
-                "INNER JOIN films AS f ON l.film_id = f.film_id " +
-                "WHERE (";
-
-        for (int i = 0; i < similarUserIds.size(); i++) {
-            sqlQuery += "l.user_id = ?";
-            if (i < similarUserIds.size() - 1) {
-                sqlQuery += " OR ";
-            }
+        if (checkUserId(id)) {
+            String sqlQuery = "SELECT f.*, m.rating as mpa_name, m.description as mpa_description, m.rating_id as mpa_id " +
+                    "FROM films as f JOIN mpa_ratings as m ON f.mpa_id = m.rating_id " +
+                    "WHERE film_id IN (SELECT film_id FROM films_likes " +
+                    "WHERE user_id IN (SELECT user_id FROM films_likes " +
+                    "WHERE film_id IN (SELECT film_id FROM films_likes WHERE user_id = ?) AND user_id <> ? " +
+                    "GROUP BY user_id ORDER BY COUNT(user_id) DESC) AND " +
+                    "film_id NOT IN (SELECT film_id FROM films_likes WHERE user_id = ?))";
+            List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm, id, id, id);
+            getFilmGenres(films);
+            getFilmLikes(films);
+            getFilmDirector(films);
+            return films;
+        } else {
+            throw new NotFoundException("Пользователь с идентификатором " + id + " не найден!");
         }
-
-        sqlQuery += ") AND f.film_id NOT IN (SELECT film_id FROM films_likes WHERE user_id = ?) " +
-                "LIMIT 10";
-
-        List<Object> params = new ArrayList<>();
-        params.addAll(similarUserIds);
-        params.add(targetUserId);
-
-        return jdbcTemplate.query(sqlQuery, params.toArray(), this::makeFilm);
     }
 
 }
