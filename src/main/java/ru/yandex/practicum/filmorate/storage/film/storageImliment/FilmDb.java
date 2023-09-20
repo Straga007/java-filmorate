@@ -447,15 +447,6 @@ public class FilmDb implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::makeDirector, filmId);
     }
 
-
-    @Override
-    public List<Film> findLikedFilmsByUser(int id) {
-        String queryToFindUserFilms = "SELECT * FROM films " +
-                "JOIN mpa_ratings m ON m.mpa_id = films.mpa_id " +
-                "WHERE films.film_id IN (SELECT film_id FROM films_likes WHERE (user_id = ?)";
-        return jdbcTemplate.query(queryToFindUserFilms, (rs, rowNum) -> makeFilm(rs, id), id);
-    }
-
     public Optional<Film> findFilmById(int filmId) {
         String sqlQuery = "select * from films where film_id = ?";
         try {
