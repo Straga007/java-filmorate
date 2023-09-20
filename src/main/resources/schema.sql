@@ -123,8 +123,15 @@ CREATE TABLE IF NOT EXISTS events (
     CONSTRAINT operation_type_con FOREIGN KEY (operation_type) REFERENCES operation_types(operation_id) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
 
+CREATE TABLE IF NOT EXISTS marks (
+    user_id INT REFERENCES public.users(user_id) ON UPDATE RESTRICT ON DELETE CASCADE,
+    film_id INT REFERENCES public.films(film_id) ON UPDATE RESTRICT ON DELETE CASCADE,
+    mark integer NOT NULL DEFAULT 6,
+    CONSTRAINT GRADES_PK PRIMARY KEY (user_id, film_id)
+);
+
 CREATE TABLE IF NOT EXISTS friends (
-                                       request_friend_id bigint REFERENCES public.users(user_id) ON UPDATE RESTRICT ON DELETE CASCADE,
-                                       response_friend_id bigint REFERENCES public.users(user_id) ON UPDATE RESTRICT ON DELETE CASCADE,
-                                       CONSTRAINT FRIENDS_PK PRIMARY KEY (request_friend_id, response_friend_id)
+    request_friend_id INT REFERENCES public.users(user_id) ON UPDATE RESTRICT ON DELETE CASCADE,
+    response_friend_id INT REFERENCES public.users(user_id) ON UPDATE RESTRICT ON DELETE CASCADE,
+    CONSTRAINT FRIENDS_PK PRIMARY KEY (request_friend_id, response_friend_id)
 );

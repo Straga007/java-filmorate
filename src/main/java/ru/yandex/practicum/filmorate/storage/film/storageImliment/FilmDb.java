@@ -1,16 +1,15 @@
 package ru.yandex.practicum.filmorate.storage.film.storageImliment;
 
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
 
@@ -398,7 +397,8 @@ public class FilmDb implements FilmStorage {
                 new ArrayList<Director>(),
                 new Mpa(resultSet.getInt("mpa_id"),
                         resultSet.getString("mpa_name"),
-                        resultSet.getString("mpa_description"))
+                        resultSet.getString("mpa_description")),
+                new HashSet<Mark>()
         );
 
     }
@@ -454,5 +454,14 @@ public class FilmDb implements FilmStorage {
                 "JOIN mpa_ratings m ON m.mpa_id = films.mpa_id " +
                 "WHERE films.film_id IN (SELECT film_id FROM films_likes WHERE (user_id = ?)";
         return jdbcTemplate.query(queryToFindUserFilms, (rs, rowNum) -> makeFilm(rs, id), id);
+    }
+
+    public Optional<Film> findFilmById(int filmId) {
+        String sqlQuery = "select * from films where film_id = ?";
+        try {
+            return Optional.of(jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, filmId));
+        } catch (EmptyResultDataAccessException e) {
+            throw new FilmNotFoundException(String.format("Фильм № %d не найден", filmId));
+        }
     }
 }

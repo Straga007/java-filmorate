@@ -36,8 +36,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> findLikedFilmsByUser(int id) {
-        return null;
+    public Optional<Film> findFilmById(int filmId) {
+        return Optional.empty();
     }
 
     public List<Film> findAll() {
