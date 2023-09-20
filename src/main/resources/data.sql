@@ -1,4 +1,5 @@
 -- Вставка данных в таблицу жанров
+
 MERGE INTO genres (GENRE_ID, GENRE_NAME)
 values (1, 'Комедия'),
        (2, 'Драма'),

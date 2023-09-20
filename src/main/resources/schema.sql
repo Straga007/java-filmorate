@@ -122,3 +122,9 @@ CREATE TABLE IF NOT EXISTS events (
     CONSTRAINT event_type_con FOREIGN KEY (event_type) REFERENCES event_types (type_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT operation_type_con FOREIGN KEY (operation_type) REFERENCES operation_types(operation_id) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
+
+CREATE TABLE IF NOT EXISTS friends (
+                                       request_friend_id bigint REFERENCES public.users(user_id) ON UPDATE RESTRICT ON DELETE CASCADE,
+                                       response_friend_id bigint REFERENCES public.users(user_id) ON UPDATE RESTRICT ON DELETE CASCADE,
+                                       CONSTRAINT FRIENDS_PK PRIMARY KEY (request_friend_id, response_friend_id)
+);
