@@ -459,6 +459,47 @@ public class FilmDb implements FilmStorage {
 
     @Override
     public List<Film> getRecommendations(int id) {
-        return null;
+        List<Integer> similarUserIds = findUsersWithMostLikedFilms(id);
+
+        List<Film> recommendedFilms = findRecommendedFilms(id, similarUserIds);
+
+        return recommendedFilms;
     }
+
+    private List<Integer> findUsersWithMostLikedFilms(int targetUserId) {
+        String sqlQuery = "SELECT l1.user_id " +
+                "FROM films_likes AS l1 " +
+                "INNER JOIN films_likes AS l2 ON l1.film_id = l2.film_id " +
+                "WHERE l1.user_id <> l2.user_id " +
+                "AND l1.user_id = ? " +
+                "GROUP BY l1.user_id " +
+                "ORDER BY COUNT(l2.user_id) DESC " +
+                "LIMIT 5";
+        List<Integer> similarUserIds = jdbcTemplate.queryForList(sqlQuery, Integer.class, targetUserId);
+        return similarUserIds;
+    }
+
+    private List<Film> findRecommendedFilms(int targetUserId, List<Integer> similarUserIds) {
+        String sqlQuery = "SELECT DISTINCT f.* " +
+                "FROM films_likes AS l " +
+                "INNER JOIN films AS f ON l.film_id = f.film_id " +
+                "WHERE (";
+
+        for (int i = 0; i < similarUserIds.size(); i++) {
+            sqlQuery += "l.user_id = ?";
+            if (i < similarUserIds.size() - 1) {
+                sqlQuery += " OR ";
+            }
+        }
+
+        sqlQuery += ") AND f.film_id NOT IN (SELECT film_id FROM films_likes WHERE user_id = ?) " +
+                "LIMIT 10";
+
+        List<Object> params = new ArrayList<>();
+        params.addAll(similarUserIds);
+        params.add(targetUserId);
+
+        return jdbcTemplate.query(sqlQuery, params.toArray(), this::makeFilm);
+    }
+
 }

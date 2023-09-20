@@ -16,12 +16,10 @@ import java.util.*;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-    private final FilmService filmService;
 
     @Autowired
-    public UserController(UserService userService, FilmService filmService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.filmService = filmService;
     }
 
     @PostMapping

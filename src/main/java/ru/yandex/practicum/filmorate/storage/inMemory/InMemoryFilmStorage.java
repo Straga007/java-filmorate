@@ -40,6 +40,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return Optional.empty();
     }
 
+    @Override
+    public List<Film> getRecommendations(int id) {
+        return null;
+    }
+
     public List<Film> findAll() {
         return new ArrayList<>(films.values());
     }
