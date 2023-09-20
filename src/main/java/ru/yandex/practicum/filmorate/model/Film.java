@@ -50,10 +50,10 @@ public class Film {
         this.directors = new HashSet<>();
     }
 
-    public Film(String name, String description, LocalDate release_date, int duration, Set<Integer> likes, ArrayList<Genre> genres, Collection<Director> directors, Mpa mpa, Set<Mark> marks) {
+    public Film(String name, String description, LocalDate releaseDate, int duration, Set<Integer> likes, ArrayList<Genre> genres, Collection<Director> directors, Mpa mpa, Set<Mark> marks) {
         this.name = name;
         this.description = description;
-        this.releaseDate = release_date;
+        this.releaseDate = releaseDate;
         this.duration = duration;
         this.likes = likes;
         this.genres = genres;
@@ -62,11 +62,11 @@ public class Film {
         this.marks = marks;
     }
 
-    public Film(int film_id, String name, String description, LocalDate release_date, int duration, HashSet<Integer> likes, ArrayList<Genre> genres, ArrayList<Director> directors, Mpa mpa, Set<Mark> marks) {
-        this.id = film_id;
+    public Film(int id, String name, String description, LocalDate releaseDate, int duration, HashSet<Integer> likes, ArrayList<Genre> genres, ArrayList<Director> directors, Mpa mpa, Set<Mark> marks) {
+        this.id = id;
         this.name = name;
         this.description = description;
-        this.releaseDate = release_date;
+        this.releaseDate = releaseDate;
         this.duration = duration;
         this.likes = likes;
         this.genres = genres;
