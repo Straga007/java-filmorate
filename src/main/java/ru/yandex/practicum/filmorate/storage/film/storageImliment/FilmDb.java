@@ -219,9 +219,10 @@ public class FilmDb implements FilmStorage {
                     "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
                     "WHERE g.genre_id = ? " +
                     "GROUP BY f.film_id " +
-                    "ORDER BY like_count DESC " +
+                    "ORDER BY like_count DESC, f.film_id ASC " +
                     "LIMIT ?";
             films = jdbcTemplate.query(sqlQuery, this::makeFilm, genreId, count);
+
         } else if (year != null && genreId == null) {
             sqlQuery = "SELECT f.*, COUNT(fl.user_id) AS like_count, " +
                     "m.rating AS mpa_name, " +
