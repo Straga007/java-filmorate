@@ -195,17 +195,20 @@ public class FilmDb implements FilmStorage {
     public Collection<Film> findPopularFilms(Integer count, Integer genreId, Integer year) {
         String sqlQuery;
         List<Film> films;
+
+        String orderByClause = "ORDER BY COUNT(l.user_id) DESC, f.film_id ASC";
+
         if (genreId == null && year == null) {
             sqlQuery = "SELECT f.*, " +
                     "m.rating AS mpa_name, " +
                     "m.rating_id AS mpa_id, " +
-                    "m.description AS mpa_description, " +
+                    "m.description AS mpa_description " +
                     "FROM films AS f " +
                     "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id " +
                     "LEFT JOIN films_likes AS l ON l.film_id = f.film_id " +
                     "GROUP BY f.film_id " +
-                    "ORDER BY COUNT(l.user_id) DESC " +
-                    "LIMIT ?";
+                    orderByClause +
+                    " LIMIT ?";
             films = jdbcTemplate.query(sqlQuery, this::makeFilm, count);
         } else if (genreId != null && year == null) {
             sqlQuery = "SELECT f.*, COUNT(fl.user_id) AS like_count, " +
@@ -219,8 +222,8 @@ public class FilmDb implements FilmStorage {
                     "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
                     "WHERE g.genre_id = ? " +
                     "GROUP BY f.film_id " +
-                    "ORDER BY like_count DESC " +
-                    "LIMIT ?";
+                    orderByClause +
+                    " LIMIT ?";
             films = jdbcTemplate.query(sqlQuery, this::makeFilm, genreId, count);
         } else if (year != null && genreId == null) {
             sqlQuery = "SELECT f.*, COUNT(fl.user_id) AS like_count, " +
@@ -234,8 +237,8 @@ public class FilmDb implements FilmStorage {
                     "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
                     "WHERE YEAR(f.release_date) = ? " +
                     "GROUP BY f.film_id " +
-                    "ORDER BY like_count DESC " +
-                    "LIMIT ?";
+                    orderByClause +
+                    " LIMIT ?";
             films = jdbcTemplate.query(sqlQuery, this::makeFilm, year, count);
         } else {
             sqlQuery = "SELECT f.*, COUNT(fl.user_id) AS like_count, " +
@@ -249,13 +252,15 @@ public class FilmDb implements FilmStorage {
                     "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
                     "WHERE YEAR(f.release_date) = ? AND g.genre_id = ? " +
                     "GROUP BY f.film_id " +
-                    "ORDER BY like_count DESC " +
-                    "LIMIT ?";
+                    orderByClause +
+                    " LIMIT ?";
             films = jdbcTemplate.query(sqlQuery, this::makeFilm, year, genreId, count);
         }
+
         getFilmGenres(films);
         getFilmLikes(films);
         getFilmDirector(films);
+
         return films;
     }
 
