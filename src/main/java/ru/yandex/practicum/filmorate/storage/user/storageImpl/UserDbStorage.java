@@ -40,6 +40,8 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void deleteUser(int id) {
         findUser(id);
+        String deleteEventsQuery = "DELETE FROM events WHERE user_id = ?";
+        jdbcTemplate.update(deleteEventsQuery, id);
         String deleteQuery = "DELETE FROM users WHERE user_id = ?";
         jdbcTemplate.update(deleteQuery, id);
     }
