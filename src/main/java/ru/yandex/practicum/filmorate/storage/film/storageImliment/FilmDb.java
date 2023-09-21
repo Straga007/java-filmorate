@@ -247,11 +247,12 @@ public class FilmDb implements FilmStorage {
                     "JOIN films_genres AS fg ON f.film_id = fg.film_id " +
                     "JOIN genres AS g ON fg.genre_id = g.genre_id " +
                     "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
-                    "WHERE YEAR(f.release_date) = ? AND g.genre_id = ? " +
+                    "WHERE g.genre_id = ? " +
                     "GROUP BY f.film_id " +
-                    "ORDER BY like_count DESC " +
+                    "ORDER BY like_count DESC, f.film_id ASC " +
                     "LIMIT ?";
-            films = jdbcTemplate.query(sqlQuery, this::makeFilm, year, genreId, count);
+            films = jdbcTemplate.query(sqlQuery, this::makeFilm, genreId, count);
+
         }
         getFilmGenres(films);
         getFilmLikes(films);
