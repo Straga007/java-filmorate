@@ -51,14 +51,17 @@ public class FriendListDaoImpl implements FriendListDao {
 
     @Override
     public List<User> getAll(Integer id) {
-        String sql = "SELECT us.user_id AS id,us.user_login,us.user_name,us.user_email,us.user_birthday " +
-                "FROM friend_list AS fr " +
-                "LEFT JOIN users AS us ON us.user_id = fr.friend_id " +
-                "WHERE fr.user_id = ? AND fr.confirmed = TRUE";
+        if (checkUserId(id)) {
+            String sql = "SELECT us.user_id AS id,us.user_login,us.user_name,us.user_email,us.user_birthday " +
+                    "FROM friend_list AS fr " +
+                    "LEFT JOIN users AS us ON us.user_id = fr.friend_id " +
+                    "WHERE fr.user_id = ? AND fr.confirmed = TRUE";
 
-        return jdbcTemplate.query(sql, this::rowMapper, id);
+            return jdbcTemplate.query(sql, this::rowMapper, id);
+        } else {
+            throw new NotFoundException("Пользователь с идентификатором " + id + " не найден");
+        }
     }
-
     @Override
     public List<User> getCommonFriends(Integer userId, Integer otherId) {
 

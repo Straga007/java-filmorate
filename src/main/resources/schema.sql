@@ -59,8 +59,8 @@ CREATE TABLE IF NOT EXISTS friend_list (
     confirmed BOOLEAN,
 
     PRIMARY KEY(user_id, friend_id),
-    CONSTRAINT user_id_fk FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-    CONSTRAINT friend_id_fk FOREIGN KEY (friend_id) REFERENCES users(user_id) ON DELETE RESTRICT ON UPDATE RESTRICT
+    CONSTRAINT user_id_fk FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT friend_id_fk FOREIGN KEY (friend_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 CREATE TABLE IF NOT EXISTS reviews (
     review_id SERIAL PRIMARY KEY,
@@ -118,20 +118,20 @@ CREATE TABLE IF NOT EXISTS events (
     operation_type INT NOT NULL,
     entity_id INT NOT NULL,
 
-    CONSTRAINT user_id_con FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-    CONSTRAINT event_type_con FOREIGN KEY (event_type) REFERENCES event_types (type_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-    CONSTRAINT operation_type_con FOREIGN KEY (operation_type) REFERENCES operation_types(operation_id) ON DELETE RESTRICT ON UPDATE RESTRICT
+    CONSTRAINT user_id_con FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT event_type_con FOREIGN KEY (event_type) REFERENCES event_types (type_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT operation_type_con FOREIGN KEY (operation_type) REFERENCES operation_types(operation_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS marks (
-    user_id INT REFERENCES public.users(user_id) ON UPDATE RESTRICT ON DELETE CASCADE,
-    film_id INT REFERENCES public.films(film_id) ON UPDATE RESTRICT ON DELETE CASCADE,
+    user_id INT REFERENCES public.users(user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    film_id INT REFERENCES public.films(film_id) ON UPDATE CASCADE ON DELETE CASCADE,
     mark integer NOT NULL DEFAULT 6,
     CONSTRAINT GRADES_PK PRIMARY KEY (user_id, film_id)
 );
 
 CREATE TABLE IF NOT EXISTS friends (
-    request_friend_id INT REFERENCES public.users(user_id) ON UPDATE RESTRICT ON DELETE CASCADE,
-    response_friend_id INT REFERENCES public.users(user_id) ON UPDATE RESTRICT ON DELETE CASCADE,
+    request_friend_id INT REFERENCES public.users(user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    response_friend_id INT REFERENCES public.users(user_id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT FRIENDS_PK PRIMARY KEY (request_friend_id, response_friend_id)
 );
