@@ -193,72 +193,52 @@ public class FilmDb implements FilmStorage {
 
     @Override
     public Collection<Film> findPopularFilms(Integer count, Integer genreId, Integer year) {
-        String sqlQuery;
-        List<Film> films;
-        if (genreId == null && year == null) {
-            sqlQuery = "SELECT f.*, " +
-                    "m.rating AS mpa_name, " +
-                    "m.rating_id AS mpa_id, " +
-                    "m.description AS mpa_description, " +
-                    "FROM films AS f " +
-                    "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id " +
-                    "LEFT JOIN films_likes AS l ON l.film_id = f.film_id " +
-                    "GROUP BY f.film_id " +
-                    "ORDER BY COUNT(l.user_id) DESC " +
-                    "LIMIT ?";
-            films = jdbcTemplate.query(sqlQuery, this::makeFilm, count);
-        } else if (genreId != null && year == null) {
-            sqlQuery = "SELECT f.*, COUNT(fl.user_id) AS like_count, " +
-                    "m.rating AS mpa_name, " +
-                    "m.rating_id AS mpa_id, " +
-                    "m.description AS mpa_description " +
-                    "FROM films AS f " +
-                    "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id " +
-                    "JOIN films_genres AS fg ON f.film_id = fg.film_id " +
-                    "JOIN genres AS g ON fg.genre_id = g.genre_id " +
-                    "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
-                    "WHERE g.genre_id = ? " +
-                    "GROUP BY f.film_id " +
-                    "ORDER BY like_count DESC " +
-                    "LIMIT ?";
-            films = jdbcTemplate.query(sqlQuery, this::makeFilm, genreId, count);
-        } else if (year != null && genreId == null) {
-            sqlQuery = "SELECT f.*, COUNT(fl.user_id) AS like_count, " +
-                    "m.rating AS mpa_name, " +
-                    "m.rating_id AS mpa_id, " +
-                    "m.description AS mpa_description " +
-                    "FROM films AS f " +
-                    "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id " +
-                    "JOIN films_genres AS fg ON f.film_id = fg.film_id " +
-                    "JOIN genres AS g ON fg.genre_id = g.genre_id " +
-                    "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
-                    "WHERE YEAR(f.release_date) = ? " +
-                    "GROUP BY f.film_id " +
-                    "ORDER BY like_count DESC " +
-                    "LIMIT ?";
-            films = jdbcTemplate.query(sqlQuery, this::makeFilm, year, count);
-        } else {
-            sqlQuery = "SELECT f.*, COUNT(fl.user_id) AS like_count, " +
-                    "m.rating AS mpa_name, " +
-                    "m.rating_id AS mpa_id, " +
-                    "m.description AS mpa_description " +
-                    "FROM films AS f " +
-                    "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id " +
-                    "JOIN films_genres AS fg ON f.film_id = fg.film_id " +
-                    "JOIN genres AS g ON fg.genre_id = g.genre_id " +
-                    "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
-                    "WHERE g.genre_id = ? " +
-                    "GROUP BY f.film_id " +
-                    "ORDER BY like_count DESC, f.film_id ASC " +
-                    "LIMIT ?";
-            films = jdbcTemplate.query(sqlQuery, this::makeFilm, genreId, count);
+        String sqlQuery = "SELECT f.*, " +
+                "m.rating AS mpa_name, " +
+                "m.description AS mpa_description, " +
+                "m.rating_id AS mpa_id, " +
+                "COUNT(l.user_id) AS like_count " +
+                "FROM films AS f " +
+                "JOIN mpa_ratings AS m ON f.mpa_id = m.rating_id " +
+                "LEFT JOIN films_likes AS l ON l.film_id = f.film_id ";
 
+        if (genreId != null) {
+            sqlQuery += "LEFT JOIN films_genres AS fg ON f.film_id = fg.film_id ";
         }
+        if (year != null) {
+            sqlQuery += "WHERE YEAR(f.release_date) = ? ";
+        } else {
+            sqlQuery += "WHERE 1=1 ";
+        }
+        if (genreId != null) {
+            sqlQuery += "AND fg.genre_id = ? ";
+        }
+
+        sqlQuery += "GROUP BY f.film_id " +
+                "ORDER BY like_count DESC, f.film_id ASC ";
+
+        if (count != null) {
+            sqlQuery += "LIMIT ? ";
+        }
+
+        List<Object> params = new ArrayList<>();
+        if (year != null) {
+            params.add(year);
+        }
+        if (genreId != null) {
+            params.add(genreId);
+        }
+        if (count != null) {
+            params.add(count);
+        }
+
+        List<Film> films = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs, rowNum), params.toArray());
         getFilmGenres(films);
         getFilmLikes(films);
         getFilmDirector(films);
         return films;
     }
+
 
     @Override
     public Collection<Film> findListOfCommonFilms(int userId, int friendId) {
