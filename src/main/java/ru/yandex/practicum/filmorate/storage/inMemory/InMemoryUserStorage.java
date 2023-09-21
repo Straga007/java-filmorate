@@ -59,6 +59,11 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
+    @Override
+    public boolean isFindUserById(long userId) {
+        return false;
+    }
+
 
     public void validate(User user) {
         String email = user.getEmail();

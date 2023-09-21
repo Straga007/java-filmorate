@@ -35,6 +35,16 @@ public class InMemoryFilmStorage implements FilmStorage {
         return new ArrayList<>(films.values());
     }
 
+    @Override
+    public Optional<Film> findFilmById(int filmId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Film> getRecommendations(int id) {
+        return null;
+    }
+
     public List<Film> findAll() {
         return new ArrayList<>(films.values());
     }
@@ -72,11 +82,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         } else {
             throw new NotFoundException("Не нашли фильм с id=" + id);
         }
-    }
-
-    @Override
-    public Collection<Film> findPopularFilms(Integer count) {
-        return null;
     }
 
 

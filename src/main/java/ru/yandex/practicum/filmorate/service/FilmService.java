@@ -8,21 +8,23 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikeDao;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
-import java.util.Collection;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
-
+    private final UserStorage userStorage;
     private final LikeDao likesDao;
     private final DirectorDao directorDao;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, LikeDao likesDao, DirectorDao directorDao) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage, LikeDao likesDao, DirectorDao directorDao) {
         this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
         this.likesDao = likesDao;
         this.directorDao = directorDao;
     }

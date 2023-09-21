@@ -18,4 +18,5 @@ public interface UserStorage {
 
     User findUser(@PathVariable int id);
 
+    boolean isFindUserById(long userId);
 }
