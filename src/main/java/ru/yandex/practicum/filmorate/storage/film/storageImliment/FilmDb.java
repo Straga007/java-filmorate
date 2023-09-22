@@ -203,7 +203,11 @@ public class FilmDb implements FilmStorage {
                 "LEFT JOIN films_likes AS l ON l.film_id = f.film_id ";
 
         if (genreId != null) {
-            sqlQuery += "LEFT JOIN films_genres AS fg ON f.film_id = fg.film_id ";
+            if (checkGenreId(genreId)) {
+                sqlQuery += "LEFT JOIN films_genres AS fg ON f.film_id = fg.film_id ";
+            } else {
+                throw new NotFoundException("Жанр с идентификатором " + genreId + " не найден!");
+            }
         }
         if (year != null) {
             sqlQuery += "WHERE YEAR(f.release_date) = ? ";
@@ -214,7 +218,7 @@ public class FilmDb implements FilmStorage {
             sqlQuery += "AND fg.genre_id = ? ";
         }
 
-        sqlQuery += "GROUP BY f.film_id " +
+        sqlQuery += "GROUP BY f.film_id, f.name " +
                 "ORDER BY like_count DESC, f.film_id ASC ";
 
         if (count != null) {
@@ -387,6 +391,11 @@ public class FilmDb implements FilmStorage {
 
     private boolean checkFilmId(int id) {
         String sql = "SELECT EXISTS(SELECT 1 FROM films WHERE film_id = ?)";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
+    }
+
+    private boolean checkGenreId(int id) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM genres WHERE genre_id = ?)";
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
     }
 
