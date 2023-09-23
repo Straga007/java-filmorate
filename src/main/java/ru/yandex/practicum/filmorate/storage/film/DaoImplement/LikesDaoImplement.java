@@ -31,8 +31,7 @@ public class LikesDaoImplement implements LikeDao {
 
     @Override
     public void addLikeToFilm(Integer filmId, Integer userId) {
-        String sqlQuery = "INSERT INTO films_likes(film_id, user_id)" +
-                "VALUES(?, ?)";
+        String sqlQuery = "INSERT INTO films_likes VALUES(?, ?)";
         feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.LIKE), feedSaveDao.getOperationTypeId(OperType.ADD), filmId);
         jdbcTemplate.update(sqlQuery, filmId, userId);
     }

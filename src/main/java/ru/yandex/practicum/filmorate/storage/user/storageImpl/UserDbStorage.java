@@ -8,7 +8,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -118,14 +117,5 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "SELECT COUNT(*) FROM users WHERE user_login = ?";
         int count = jdbcTemplate.queryForObject(sqlQuery, Integer.class, login);
         return count == 0;
-    }
-
-    public boolean isFindUserById(long userId) {
-        String sqlQuery = "SELECT EXISTS(SELECT 1 FROM users WHERE user_id = ?)";
-        if (jdbcTemplate.queryForObject(sqlQuery, Boolean.class, userId)) {
-            return true;
-        }
-        log.warn("Пользователь № {} не найден", userId);
-        throw new UserNotFoundException(String.format("Пользователь № %d не найден", userId));
     }
 }

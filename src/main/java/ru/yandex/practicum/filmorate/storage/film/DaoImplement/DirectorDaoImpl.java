@@ -44,12 +44,9 @@ public class DirectorDaoImpl implements DirectorDao {
 
     @Override
     public void deleteDirectorById(Integer directorId) {
-        if (!checkDirectorId(directorId)) {
-            throw new NotFoundException("Режиссер с идентификатором " + directorId + " не найден!");
-        } else {
-            String sqlQuery = "DELETE FROM directors WHERE director_id = ?";
-            jdbcTemplate.update(sqlQuery, directorId);
-        }
+        getDirectorById(directorId);
+        String sqlQuery = "DELETE FROM directors WHERE director_id = ?";
+        jdbcTemplate.update(sqlQuery, directorId);
     }
 
     @Override
@@ -75,9 +72,8 @@ public class DirectorDaoImpl implements DirectorDao {
 
     @Override
     public Director updateDirector(Director director) {
-        if (!checkDirectorId(director.getId())) {
-            throw new NotFoundException("Режиссер с идентификатором " + director.getId() + " не найден!");
-        } else if (!checkNameDirector(director.getName())) {
+        getDirectorById(director.getId());
+        if (!checkNameDirector(director.getName())) {
             throw new ValidationException("Имя режиссера не может быть пустым");
         } else {
             String sqlQuery = "UPDATE directors SET director_name = ? WHERE director_id = ?";
@@ -89,11 +85,6 @@ public class DirectorDaoImpl implements DirectorDao {
     private Director makeDirector(ResultSet rs, int rowNum) throws SQLException {
         return new Director(rs.getInt("director_id"),
                 rs.getString("director_name"));
-    }
-
-    private boolean checkDirectorId(int id) {
-        String sqlQuery = "SELECT EXISTS(SELECT 1 FROM directors WHERE director_id = ?)";
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sqlQuery, Boolean.class, id));
     }
 
     private boolean checkNameDirector(String nameDirector) {

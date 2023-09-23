@@ -17,6 +17,4 @@ public interface UserStorage {
     User updateUser(@RequestBody User userToUpdate);
 
     User findUser(@PathVariable int id);
-
-    boolean isFindUserById(long userId);
 }
