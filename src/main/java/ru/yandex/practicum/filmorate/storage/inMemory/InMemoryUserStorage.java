@@ -8,7 +8,10 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
@@ -58,7 +61,6 @@ public class InMemoryUserStorage implements UserStorage {
             throw new NotFoundException("user with id:" + id + " not found");
         }
     }
-
 
     public void validate(User user) {
         String email = user.getEmail();

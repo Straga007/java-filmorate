@@ -19,13 +19,31 @@ public class InMemoryFilmStorage implements FilmStorage {
     final LocalDate invalidReleaseDate = LocalDate.of(1895, 12, 28);
 
 
-    public Collection<Film> findPopularFilms(Integer count) {
+    public Collection<Film> findPopularFilms(Integer count, Integer genreId, Integer year) {
         List<Film> allFilms = new ArrayList<>(films.values());
         allFilms.sort((f1, f2) -> Integer.compare(f2.getLikes().size(), f1.getLikes().size()));
         int filmsCount = count != null ? count : 10;
         return allFilms.subList(0, Math.min(filmsCount, allFilms.size()));
     }
 
+    @Override
+    public Collection<Film> findAllPopularFilms(String query, String by) {
+        return null;
+    }
+
+    public Collection<Film> findListOfCommonFilms(int userId, int friendId) {
+        return new ArrayList<>(films.values());
+    }
+
+    @Override
+    public Optional<Film> findFilmById(int filmId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Film> getRecommendations(int id) {
+        return null;
+    }
 
     public List<Film> findAll() {
         return new ArrayList<>(films.values());

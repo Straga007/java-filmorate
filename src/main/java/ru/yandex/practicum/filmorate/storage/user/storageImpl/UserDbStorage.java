@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user.storageImpl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,6 +21,7 @@ import java.util.Collection;
 
 @Component
 @Primary
+@Slf4j
 public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
@@ -36,6 +38,9 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void deleteUser(int id) {
+        findUser(id);
+        String deleteEventsQuery = "DELETE FROM events WHERE user_id = ?";
+        jdbcTemplate.update(deleteEventsQuery, id);
         String deleteQuery = "DELETE FROM users WHERE user_id = ?";
         jdbcTemplate.update(deleteQuery, id);
     }
@@ -113,5 +118,4 @@ public class UserDbStorage implements UserStorage {
         int count = jdbcTemplate.queryForObject(sqlQuery, Integer.class, login);
         return count == 0;
     }
-
 }

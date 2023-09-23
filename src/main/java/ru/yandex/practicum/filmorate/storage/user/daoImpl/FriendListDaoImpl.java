@@ -5,6 +5,9 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.feed.EventType;
+import ru.yandex.practicum.filmorate.model.feed.OperType;
+import ru.yandex.practicum.filmorate.storage.feed.FeedSaveDao;
 import ru.yandex.practicum.filmorate.storage.user.dao.FriendListDao;
 
 import java.sql.ResultSet;
@@ -16,9 +19,11 @@ import java.util.Objects;
 public class FriendListDaoImpl implements FriendListDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final FeedSaveDao feedSaveDao;
 
-    public FriendListDaoImpl(JdbcTemplate jdbcTemplate) {
+    public FriendListDaoImpl(JdbcTemplate jdbcTemplate, FeedSaveDao feedSaveDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.feedSaveDao = feedSaveDao;
     }
 
     @Override
@@ -31,6 +36,7 @@ public class FriendListDaoImpl implements FriendListDao {
         String sqlQuery = "INSERT INTO friend_list(user_id, friend_id, confirmed)" +
                 "VALUES (?, ?, ?)";
         jdbcTemplate.update(sqlQuery, userId, friendId, true);
+        feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.FRIEND), feedSaveDao.getOperationTypeId(OperType.ADD), friendId);
     }
 
     @Override
@@ -40,27 +46,32 @@ public class FriendListDaoImpl implements FriendListDao {
         }
         String sqlQuery = "DELETE FROM friend_list WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
+        feedSaveDao.saveEvent(userId, feedSaveDao.getEventTypeId(EventType.FRIEND), feedSaveDao.getOperationTypeId(OperType.REMOVE), friendId);
     }
 
     @Override
     public List<User> getAll(Integer id) {
-        String sql = "SELECT us.user_id AS id,us.user_login,us.user_name,us.user_email,us.user_birthday " +
-                "FROM friend_list AS fr " +
-                "LEFT JOIN users AS us ON us.user_id = fr.friend_id " +
-                "WHERE fr.user_id = ? AND fr.confirmed = TRUE";
+        if (checkUserId(id)) {
+            String sql = "SELECT us.user_id AS id,us.user_login,us.user_name,us.user_email,us.user_birthday " +
+                    "FROM friend_list AS fr " +
+                    "LEFT JOIN users AS us ON us.user_id = fr.friend_id " +
+                    "WHERE fr.user_id = ? AND fr.confirmed = TRUE";
 
-        return jdbcTemplate.query(sql, this::rowMapper, id);
+            return jdbcTemplate.query(sql, this::rowMapper, id);
+        } else {
+            throw new NotFoundException("Пользователь с идентификатором " + id + " не найден");
+        }
     }
 
     @Override
     public List<User> getCommonFriends(Integer userId, Integer otherId) {
 
-            String sql = "SELECT  us.* " +
-                    "FROM friend_list AS fl " +
-                    "JOIN users AS us ON fl.friend_id = us.user_id " +
-                    "WHERE fl.user_id = ? AND fl.friend_id IN (" +
-                    "SELECT friend_id FROM friend_list WHERE user_id = ?)";
-            return jdbcTemplate.query(sql, this::rowMapper, userId, otherId);
+        String sql = "SELECT  us.* " +
+                "FROM friend_list AS fl " +
+                "JOIN users AS us ON fl.friend_id = us.user_id " +
+                "WHERE fl.user_id = ? AND fl.friend_id IN (" +
+                "SELECT friend_id FROM friend_list WHERE user_id = ?)";
+        return jdbcTemplate.query(sql, this::rowMapper, userId, otherId);
 
     }
 
